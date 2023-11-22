@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:group/dangbai.dart';
 import 'logout.dart';
 import 'verifyaccount.dart';
+import 'dangbai.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,7 +55,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => Home();
+  State<MyHomePage> createState() => DangBai();
 }
 
 class Home extends State<MyHomePage> with TickerProviderStateMixin {
