@@ -1,9 +1,8 @@
-
+import 'package:fb_project/dangbai.dart';
+import 'package:fb_project/login.dart';
 import 'package:flutter/material.dart';
 
 class Logout extends StatelessWidget {
-
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -18,7 +17,6 @@ class Logout extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 verticalDirection: VerticalDirection.down,
                 children: [
-                  // Phần tử đầu tiên là row chứa 2 thành phần, mỗi thành phần là 1 cột chứa 5 phẩn tử
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -33,14 +31,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(Icons.person_add_alt_1_sharp,
                                             color: Colors.blue),
@@ -49,42 +47,51 @@ class Logout extends StatelessWidget {
                                     ),
                                   )),
                               SizedBox(height: 10),
-                              Container(
-                                  width: double.infinity,
-                                  height: 100,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Icon(
-                                          Icons.tv,
-                                          color: Colors.blue,
-                                        ),
-                                        Text("Video"),
-                                      ],
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => DangBai()),
+                                  );
+                                },
+                                child: Container(
+                                    width: double.infinity,
+                                    height: 100,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10)),
                                     ),
-                                  )),
+                                    child: Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Icons.tv,
+                                            color: Colors.blue,
+                                          ),
+                                          Text("Đăng bài"),
+                                        ],
+                                      ),
+                                    )),
+                              ),
                               SizedBox(height: 10),
                               Container(
                                   width: double.infinity,
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.bookmark,
@@ -100,14 +107,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(Icons.calendar_month,
                                             color: Color(0xffe892a2)),
@@ -121,14 +128,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.work,
@@ -155,14 +162,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.watch_later_outlined,
@@ -178,14 +185,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.music_video,
@@ -201,14 +208,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.flag_rounded,
@@ -224,14 +231,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(Icons.gamepad_outlined,
                                             color: Colors.blue),
@@ -245,14 +252,14 @@ class Logout extends StatelessWidget {
                                   height: 100,
                                   decoration: const BoxDecoration(
                                     color: Colors.white,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(10)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10)),
                                   ),
                                   child: Padding(
                                     padding: EdgeInsets.all(10),
                                     child: Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Icon(
                                           Icons.home_work_outlined,
@@ -290,7 +297,6 @@ class Logout extends StatelessWidget {
                             Center(
                               child: Text("Xem thêm"),
                             )
-
                           ],
                         ),
                       )),
@@ -309,8 +315,8 @@ class Logout extends StatelessWidget {
                           children: [
                             Padding(
                               padding: EdgeInsets.all(10),
-                              child: Icon(Icons.question_mark,
-                                  color: Colors.grey),
+                              child:
+                                  Icon(Icons.question_mark, color: Colors.grey),
                             ),
                             Center(
                               child: Text("Câu hỏi và trợ giúp"),
@@ -339,7 +345,6 @@ class Logout extends StatelessWidget {
                             Center(
                               child: Text("Cài đặt quyền riêng tư"),
                             )
-
                           ],
                         ),
                       )),
@@ -358,13 +363,20 @@ class Logout extends StatelessWidget {
                           children: [
                             Padding(
                               padding: EdgeInsets.all(10),
-                              child: Icon(Icons.logout,
-                                  color: Colors.grey),
+                              child: Icon(Icons.logout, color: Colors.grey),
                             ),
-                            Center(
-                              child: Text("Đăng xuất"),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Login()),
+                                );
+                              },
+                              child: Center(
+                                child: Text("Đăng xuất"),
+                              ),
                             )
-
                           ],
                         ),
                       )),

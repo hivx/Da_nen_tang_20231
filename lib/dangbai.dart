@@ -2,14 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:fb_project/home.dart';
 import 'package:flutter/material.dart';
-import 'package:group/logout.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 import 'main.dart';
 
-class DangBai extends State<MyHomePage> {
+class DangBai extends StatefulWidget {
+  @override
+  _DangBaiWidgetState createState() => _DangBaiWidgetState();
+}
+
+class _DangBaiWidgetState extends State<DangBai>{
   get confirm => null;
   bool isColumnVisible = true;
   bool expanded = false;
@@ -117,12 +122,12 @@ class DangBai extends State<MyHomePage> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                    size: 24.0,
-                    semanticLabel: 'Text to announce in accessibility modes',
-                  ),
+                  // const Icon(
+                  //   Icons.arrow_back,
+                  //   color: Colors.black,
+                  //   size: 24.0,
+                  //   semanticLabel: 'Text to announce in accessibility modes',
+                  // ),
                   const Align(
                     alignment: AlignmentDirectional(-1, 0),
                     child: Text(

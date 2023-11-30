@@ -1,5 +1,7 @@
+import 'package:fb_project/home.dart';
 import 'package:flutter/material.dart';
 import 'login.dart';
+import 'main.dart';
 
 PageRouteBuilder _customPageRoute(Widget page) {
   return PageRouteBuilder(
@@ -84,7 +86,13 @@ class WidgetLoginAccount extends State<LoginAccount> {
                   FractionallySizedBox(
                     widthFactor: 1.0,
                     child: ElevatedButton(
-                        onPressed: null,
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                          );
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(const Color.fromRGBO(231, 243, 255, 1)), // Đặt màu nền
                         ),
