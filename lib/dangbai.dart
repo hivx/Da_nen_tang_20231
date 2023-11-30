@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:group/logout.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -76,10 +77,18 @@ class DangBai extends State<MyHomePage> {
   }
 
   void selectImages() async {
-    final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
+    debugPrint("chooose image");
+    final List<XFile> selectedImages = await imagePicker.pickMultiImage();
     if (selectedImages!.isNotEmpty) {
-      imageFileList!.addAll(selectedImages);
+      setState(() {
+        imageFileList!.addAll(selectedImages);
+      });
     }
+    for (XFile file in imageFileList) {
+      String path = file.path;
+      debugPrint('image 1: $path');
+    }
+    // debugPrint('image choose: $imageFileList.for');
   }
 
   Future<void> _pickImage() async {
@@ -291,7 +300,7 @@ class DangBai extends State<MyHomePage> {
                               expands: true,
                               decoration: InputDecoration(
                                 hintText: "Bạn đang nghĩ gì?",
-                                hintStyle: TextStyle(fontSize: 24),
+                                hintStyle: TextStyle(fontSize: 20),
                                 border: InputBorder.none,
                               ),
                               onChanged: (value) {
@@ -301,205 +310,303 @@ class DangBai extends State<MyHomePage> {
                               },
                             ),
                           ),
-                          if (imagePath.isNotEmpty)
+                          if (imageFileList.isNotEmpty)
                             Positioned(
-                              top: 80.0,
-                                child:Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 400,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.rectangle,
-                                    color: Colors.greenAccent,
-                                    image: DecorationImage(
-                                      image: FileImage(
-                                        File(imagePath),
+                              top: 80,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          color: Colors.greenAccent,
+                                          image: imageFileList[0] != null
+                                              ? DecorationImage(
+                                                  image: FileImage(
+                                                    File(imageFileList[0].path),
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
+                                        ),
                                       ),
-                                      fit: BoxFit.cover,
-                                    ),
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          color: Colors.greenAccent,
+                                          image: imageFileList[2] != null
+                                              ? DecorationImage(
+                                                  image: FileImage(
+                                                    File(imageFileList[2].path),
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          color: Colors.redAccent,
+                                          image: imageFileList[1] != null
+                                              ? DecorationImage(
+                                                  image: FileImage(
+                                                    File(imageFileList[1].path),
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                2,
+                                        height: 150,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          color: Colors.greenAccent,
+                                          image: imageFileList[3] != null
+                                              ? DecorationImage(
+                                                  image: FileImage(
+                                                    File(imageFileList[3].path),
+                                                  ),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             )
-
                         ],
                       )),
                 ],
               ),
             ),
           ),
-          AnimatedOpacity(
-            opacity: isColumnVisible ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 500),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height / 2,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          _pickImage();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            border: BorderDirectional(
-                              top: BorderSide(color: Colors.grey),
-                              bottom: BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.image_outlined,
-                                color: Colors.green,
-                              ),
-                              SizedBox(width: 8.0),
-                              Text("Ảnh/Video"),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.person_add_alt_1_sharp,
-                              color: Colors.blue,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Gắn thẻ bạn bè"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.sentiment_very_satisfied,
-                                color: Colors.orangeAccent),
-                            SizedBox(width: 8.0),
-                            Text("Cảm xúc/Hoạt động"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.pin_drop,
-                              color: Colors.redAccent,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Ảnh/video"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.text_fields_sharp,
-                              color: Colors.green,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Màu nền"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.camera_alt,
-                              color: Colors.blueAccent,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Camera"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.video_call_outlined,
-                              color: Colors.redAccent,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Video trực tiếp"),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          border: BorderDirectional(
-                            top: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.music_note_outlined,
-                              color: Colors.greenAccent,
-                            ),
-                            SizedBox(width: 8.0),
-                            Text("Nhạc"),
-                          ],
-                        ),
-                      ),
-                    ],
+          if (isColumnVisible)
+            AnimatedOpacity(
+              opacity: isColumnVisible ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 500),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 2,
+                  color: Colors.white,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        ItemVertical(
+                            icon: Icons.image_outlined,
+                            iconColor: Colors.green,
+                            text: "Ảnh/Video",
+                            onTap: selectImages),
+                        ItemVertical(
+                            icon: Icons.person_add_alt_1_sharp,
+                            iconColor: Colors.blue,
+                            text: "Gắn thẻ bạn bè",
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.sentiment_very_satisfied,
+                            iconColor: Colors.orangeAccent,
+                            text: "Cảm xúc/Hoạt động",
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.pin_drop,
+                            text: "Vị trí",
+                            iconColor: Colors.redAccent,
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.text_fields_sharp,
+                            iconColor: Colors.green,
+                            text: "Màu nền",
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.camera_alt,
+                            text: "Camera",
+                            iconColor: Colors.blueAccent,
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.video_call_outlined,
+                            iconColor: Colors.redAccent,
+                            text: "Video trực tiếp",
+                            onTap: () {}),
+                        ItemVertical(
+                            icon: Icons.music_note_outlined,
+                            iconColor: Colors.greenAccent,
+                            text: "Nhạc",
+                            onTap: () {}),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+          if (!isColumnVisible)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(children: [
+                  ItemHorizontal(
+                      icon: Icons.image_outlined,
+                      iconColor: Colors.green,
+                      onTap: selectImages),
+                  ItemHorizontal(
+                      icon: Icons.person_add_alt_1_sharp,
+                      iconColor: Colors.blue,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.sentiment_very_satisfied,
+                      iconColor: Colors.orangeAccent,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.pin_drop,
+                      iconColor: Colors.redAccent,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.text_fields_sharp,
+                      iconColor: Colors.green,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.camera_alt,
+                      iconColor: Colors.blueAccent,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.video_call_outlined,
+                      iconColor: Colors.redAccent,
+                      onTap: () {}),
+                  ItemHorizontal(
+                      icon: Icons.music_note_outlined,
+                      iconColor: Colors.greenAccent,
+                      onTap: () {}),
+                ]),
+              ),
+            ),
         ],
+      ),
+    );
+  }
+}
+
+class MyHorizontalScrollView extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(children: [
+        ItemHorizontal(
+            icon: Icons.image_outlined, iconColor: Colors.green, onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.person_add_alt_1_sharp,
+            iconColor: Colors.blue,
+            onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.sentiment_very_satisfied,
+            iconColor: Colors.orangeAccent,
+            onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.pin_drop, iconColor: Colors.redAccent, onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.text_fields_sharp,
+            iconColor: Colors.green,
+            onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.camera_alt, iconColor: Colors.blueAccent, onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.video_call_outlined,
+            iconColor: Colors.redAccent,
+            onTap: () {}),
+        ItemHorizontal(
+            icon: Icons.music_note_outlined,
+            iconColor: Colors.greenAccent,
+            onTap: () {}),
+      ]),
+    );
+  }
+}
+
+class ItemVertical extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String text;
+  final VoidCallback onTap;
+  const ItemVertical(
+      {required this.icon,
+      required this.iconColor,
+      required this.text,
+      required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          border: BorderDirectional(
+            top: BorderSide(color: Colors.grey),
+            bottom: BorderSide(color: Colors.grey),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: iconColor,
+            ),
+            SizedBox(width: 8.0),
+            Text(text),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ItemHorizontal extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final VoidCallback onTap;
+  const ItemHorizontal(
+      {required this.icon, required this.iconColor, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 50,
+        height: 50,
+        margin: EdgeInsets.all(8),
+        child: Center(
+          child: Icon(
+            icon,
+            color: iconColor,
+          ),
+        ),
       ),
     );
   }
