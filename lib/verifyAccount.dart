@@ -1,8 +1,13 @@
+import 'package:fb_project/home.dart';
 import 'package:flutter/material.dart';
 
 import 'main.dart';
+class VerifyAccount extends StatefulWidget {
+  @override
+  _VerifyAccountWidgetState createState() => _VerifyAccountWidgetState();
+}
 
-class VerifyAccount extends State<MyHomePage> {
+class _VerifyAccountWidgetState extends State<VerifyAccount> {
 
   get confirm => null;
 
