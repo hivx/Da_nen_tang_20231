@@ -2,18 +2,18 @@ import 'dart:convert';
 import 'package:anti_facebook_app/utils/httpRequest.dart';
 
 class PostService {
-  static Future<List<dynamic>> fetchListPosts() async {
-    try {
-      final response =
-          await HttpService.post(''); // Điều chỉnh path để phản ánh API của bạn
-      final List<dynamic> posts =
-          jsonDecode(response); // Chuyển đổi chuỗi JSON thành danh sách
+  // static Future<List<dynamic>> fetchListPosts() async {
+  //   try {
+  //     final response =
+  //         await HttpService.post(''); // Điều chỉnh path để phản ánh API của bạn
+  //     final List<dynamic> posts =
+  //         jsonDecode(response); // Chuyển đổi chuỗi JSON thành danh sách
 
-      return posts; // Trả về danh sách bài đăng từ API
-    } catch (e) {
-      throw Exception('Failed to fetch posts: $e');
-    }
-  }
+  //     return posts; // Trả về danh sách bài đăng từ API
+  //   } catch (e) {
+  //     throw Exception('Failed to fetch posts: $e');
+  //   }
+  // }
 
   // static Future<void> createPost(Map<String, dynamic> postData) async {
   //   try {
