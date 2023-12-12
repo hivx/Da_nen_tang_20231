@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:anti_facebook_app/features/friends/screens/friends_search_screen.dart';
 import 'package:anti_facebook_app/features/friends/screens/friends_suggest_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../models/user.dart';
+import 'package:http/http.dart' as http;
 
 class FriendsScreen extends StatefulWidget {
   static const String routeName = '/friends-screen';
@@ -29,105 +32,122 @@ class FriendRequest {
 
 class _FriendsScreenState extends State<FriendsScreen> {
   final today = DateTime.now();
-  final friends = [
-    FriendRequest(
-      user: User(
-        name: 'Minh Hương',
-        avatar: 'assets/images/user/minhhuong.jpg',
-      ),
-      time: '1 tuần',
-      mutualFriends: 25,
-      f1: User(
-        name: 'Khánh Vy',
-        avatar: 'assets/images/user/khanhvy.jpg',
-      ),
-      f2: User(
-        name: 'Leo Messi',
-        avatar: 'assets/images/user/messi.jpg',
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Khánh Vy',
-        avatar: 'assets/images/user/khanhvy.jpg',
-      ),
-      time: '3 tuần',
-      mutualFriends: 1,
-      f1: User(
-        name: 'Bảo Ngân',
-        avatar: 'assets/images/user/baongan.jpg',
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Vương Hồng Thúy',
-        avatar: 'assets/images/user/vuonghongthuy.jpg',
-      ),
-      time: '2 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Leo Messi',
-        avatar: 'assets/images/user/messi.jpg',
-      ),
-      mutualFriends: 455,
-      f1: User(
-        name: 'Minh Hương',
-        avatar: 'assets/images/user/minhhuong.jpg',
-      ),
-      f2: User(
-        name: 'Hà Linhh',
-        avatar: 'assets/images/user/halinh.jpg',
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Nguyễn Thị Minh Tuyền',
-        avatar: 'assets/images/user/minhtuyen.jpg',
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Hà Linhh',
-        avatar: 'assets/images/user/halinh.jpg',
-      ),
-      time: '4 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Bảo Ngân',
-        avatar: 'assets/images/user/baongan.jpg',
-      ),
-      time: '5 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Doraemon',
-        avatar: 'assets/images/user/doraemon.jpg',
-      ),
-      time: '1 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Minh Trí',
-        avatar: 'assets/images/user/minhtri.jpg',
-      ),
-      time: '4 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Sách Cũ Ngọc',
-        avatar: 'assets/images/user/sachcungoc.jpg',
-      ),
-      time: '1 tuần',
-    ),
-  ];
+  List<FriendRequest> friends = [];
+  final String apiGetRequestFriend =
+      'https://it4788.catan.io.vn/get_requested_friends';
+  final String apiSetAcceptFriend =
+      'https://it4788.catan.io.vn/set_accept_friend';
+  final String authToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Mzc1LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDIzMTMzNDd9.wFUtXedv902h_EXRUcXZCIFjVBX1vcLYNEl7blbgkqI";
+  int totalRequestFriend = 0;
+
+  Future getData() async {
+    var data = {"index": "0", "count": "5"};
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiGetRequestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        Map<String, dynamic> data = responseData['data'];
+        List<dynamic> requests = data['requests'];
+        int total = int.parse(data['total']);
+        List<FriendRequest> tempFriendRequests = [];
+        for (var request in requests) {
+          String username = request['username'];
+          String id = request['id'];
+          String avatar = request['avatar'];
+          int sameFriends = int.parse(request['same_friends']);
+          String created = request['created'];
+          DateTime dateTime = DateTime.parse(created);
+          DateTime now = DateTime.now();
+          Duration difference = now.difference(dateTime);
+
+          String formattedTime = formatTimeDifference(difference);
+          FriendRequest friendRequest = FriendRequest(
+              user: User(name: username, avatar: avatar, userId: id),
+              time: formattedTime,
+              mutualFriends: sameFriends);
+          tempFriendRequests.add(friendRequest);
+        }
+
+        setState(() {
+          friends = tempFriendRequests;
+          totalRequestFriend = total;
+        });
+
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get data. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error4: $e');
+      throw Exception('Failed to get data');
+    }
+  }
+
+  String formatTimeDifference(Duration difference) {
+    if (difference.inMinutes < 60) {
+      return "${difference.inMinutes} phút";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours} giờ";
+    } else if (difference.inDays < 7) {
+      return "${difference.inDays} ngày";
+    } else if (difference.inDays < 30) {
+      int weeks = (difference.inDays / 7).floor();
+      return "$weeks tuần";
+    } else if (difference.inDays < 365) {
+      int months = (difference.inDays / 30).floor();
+      return "$months tháng";
+    } else {
+      int years = (difference.inDays / 365).floor();
+      return "$years năm";
+    }
+  }
+
+  Future setAcceptFriend(String? userId, String isAccept, int index) async {
+    var data = {"user_id": userId, "is_accept": isAccept};
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiSetAcceptFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          setState(() {
+            friends.removeAt(index);
+          });
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set accept friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set accept friend');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
   @override
@@ -255,8 +275,8 @@ class _FriendsScreenState extends State<FriendsScreen> {
               indent: 10,
               endIndent: 10,
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(
+            Padding(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
               child: Row(
@@ -267,7 +287,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Lời mời kết bạn',
                         style: TextStyle(
                           color: Colors.black,
@@ -275,12 +295,12 @@ class _FriendsScreenState extends State<FriendsScreen> {
                           fontSize: 20,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(
-                        '568',
-                        style: TextStyle(
+                        "$totalRequestFriend",
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -288,7 +308,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                       ),
                     ],
                   ),
-                  Text(
+                  const Text(
                     'Xem tất cả',
                     style: TextStyle(
                       fontSize: 17,
@@ -316,7 +336,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundImage: AssetImage(friends[i].user.avatar),
+                        backgroundImage: NetworkImage(friends[i].user.avatar),
                         radius: 46,
                       ),
                     ),
@@ -372,7 +392,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                           left: 22,
                                           top: 2,
                                           child: CircleAvatar(
-                                            backgroundImage: AssetImage(
+                                            backgroundImage: NetworkImage(
                                                 friends[i].f2!.avatar),
                                             radius: 12,
                                           ),
@@ -389,7 +409,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                                             ),
                                           ),
                                           child: CircleAvatar(
-                                            backgroundImage: AssetImage(
+                                            backgroundImage: NetworkImage(
                                                 friends[i].f1!.avatar),
                                             radius: 12,
                                           ),
@@ -417,7 +437,9 @@ class _FriendsScreenState extends State<FriendsScreen> {
                             children: [
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setAcceptFriend(friends[i].user.userId, "1", i); // chang id
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.transparent,
                                     backgroundColor: Colors.blue[700],
@@ -440,7 +462,9 @@ class _FriendsScreenState extends State<FriendsScreen> {
                               ),
                               Expanded(
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setAcceptFriend(friends[i].user.userId, "0", i); // chang user id
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.transparent,
                                     backgroundColor: Colors.grey[300],

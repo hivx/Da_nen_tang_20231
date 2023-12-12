@@ -21,6 +21,7 @@ class User {
   final List<Post>? posts;
   final String? pageType;
   final String? address;
+  final String? userId;
   User({
     required this.name,
     required this.avatar,
@@ -41,6 +42,7 @@ class User {
     this.posts,
     this.pageType,
     this.address,
+    this.userId,
   });
 
   User copyWith({
@@ -63,6 +65,7 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
+    String? userId,
   }) {
     return User(
       name: name ?? this.name,
@@ -84,6 +87,7 @@ class User {
       posts: posts ?? this.posts,
       pageType: pageType ?? this.pageType,
       address: address ?? this.address,
+      userId: userId ?? this.userId,
     );
   }
 }
