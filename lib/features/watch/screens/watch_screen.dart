@@ -40,7 +40,7 @@ class _WatchScreenState extends State<WatchScreen> {
       sad: 36,
       share: 98,
       wow: 18,
-      video: ['assets/videos/4.mp4'],
+      video: 'assets/videos/4.mp4',
     ),
     Post(
       user: User(
@@ -59,7 +59,7 @@ class _WatchScreenState extends State<WatchScreen> {
       sad: 20,
       share: 98,
       wow: 5,
-      video: ['assets/videos/5.mp4'],
+      video: 'assets/videos/5.mp4',
     ),
     Post(
       user: User(name: 'Spezon', avatar: 'assets/images/user/spezon.jpg'),
@@ -75,7 +75,7 @@ class _WatchScreenState extends State<WatchScreen> {
       sad: 20,
       share: 98,
       wow: 5,
-      video: ['assets/videos/6.mp4'],
+      video: 'assets/videos/6.mp4',
     ),
   ];
   List<GlobalKey> key = [];

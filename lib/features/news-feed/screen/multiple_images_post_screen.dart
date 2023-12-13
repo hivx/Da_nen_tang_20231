@@ -125,7 +125,7 @@ class _MultipleImagesPostScreenState extends State<MultipleImagesPostScreen> {
                       ),
                       child: CircleAvatar(
                         radius: 20,
-                        backgroundImage: AssetImage(widget.post.user.avatar),
+                        backgroundImage: NetworkImage(widget.post.user.avatar),
                       ),
                     ),
                     Padding(

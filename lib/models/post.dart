@@ -1,45 +1,64 @@
 import 'package:anti_facebook_app/models/user.dart';
 
+List<Post> postsFromJson(dynamic str) =>
+    List<Post>.from(str.map((x) => Post.fromJson(x)));
+
 class Post {
-  final User user;
-  final String time;
-  final String shareWith;
-  final List<String>? image;
-  final List<String>? video;
-  final String? content;
-  final List<String>? text;
-  final String? checkin;
-  final int? like;
-  final int? haha;
-  final int? sad;
-  final int? love;
-  final int? lovelove;
-  final int? angry;
-  final int? comment;
-  final int? share;
-  final int? wow;
-  final String? layout; // classic, column, quote, frame
-  final String? type; //normal, share, memory, ...
+  late int? id = 0;
+  late User user;
+  late String time;
+  late String? shareWith;
+  late List<String>? image;
+  late String? video;
+  late String? content;
+  // late String? checkin;
+  late int? like;
+  late int? haha;
+  late int? sad;
+  late int? love;
+  late int? lovelove;
+  late int? angry;
+  late int? comment;
+  late int? share;
+  late int? wow;
+  late String? layout; // classic, column, quote, frame
+  late String? type; //normal, share, memory, ...
+  late String? name = 'tien';
+  late int? feel;
+  late int? commentMark;
+  late int? isFelt;
+  late int? isBlocked;
+  late int? canEdit;
+  late int? banned;
+  late String? state;
   Post({
+    this.id,
     required this.user,
     required this.time,
-    required this.shareWith,
     this.image,
     this.video,
     this.content,
-    this.text,
-    this.checkin,
+    // this.checkin,
     this.like,
-    this.haha,
-    this.sad,
     this.love,
-    this.lovelove,
-    this.angry,
     this.comment,
+    this.haha,
     this.share,
+    this.lovelove,
     this.wow,
     this.layout,
+    this.shareWith,
+    this.sad,
+    this.angry,
     this.type,
+    this.name,
+    this.feel,
+    this.commentMark,
+    this.isFelt,
+    this.isBlocked,
+    this.canEdit,
+    this.banned,
+    this.state,
   });
 
   Post copyWith({
@@ -47,10 +66,9 @@ class Post {
     String? time,
     String? shareWith,
     List<String>? image,
-    List<String>? video,
+    String? video,
     String? content,
-    List<String>? text,
-    String? checkin,
+    // String? checkin,
     int? like,
     int? haha,
     int? sad,
@@ -62,6 +80,14 @@ class Post {
     int? wow,
     String? layout,
     String? type,
+    String? name,
+    int? feel,
+    int? commentMark,
+    int? isFelt,
+    int? isBlocked,
+    int? canEdit,
+    int? banned,
+    String? state,
   }) {
     return Post(
       user: user ?? this.user,
@@ -70,8 +96,7 @@ class Post {
       image: image ?? this.image,
       video: video ?? this.video,
       content: content ?? this.content,
-      text: text ?? this.text,
-      checkin: checkin ?? this.checkin,
+      // checkin: checkin ?? this.checkin,
       like: like ?? this.like,
       haha: haha ?? this.haha,
       sad: sad ?? this.sad,
@@ -83,6 +108,64 @@ class Post {
       wow: wow ?? this.wow,
       layout: layout ?? this.layout,
       type: type ?? this.type,
+      name: name ?? this.name,
+      feel: feel ?? this.feel,
+      commentMark: commentMark ?? this.commentMark,
+      isFelt: isFelt ?? this.isFelt,
+      isBlocked: isBlocked ?? this.isBlocked,
+      canEdit: canEdit ?? this.canEdit,
+      banned: banned ?? this.banned,
+      state: state ?? this.state,
     );
   }
+
+  Post.fromJson(Map<String, dynamic> json) {
+    id = int.parse(json['id'].toString());
+    name = json['name'];
+    if (json['image'] != null && (json['image'] as List).isNotEmpty) {
+      image = (json['image'] as List)
+          .map((item) => item['url'].toString())
+          .toList();
+    } else {
+      image = [];
+    }
+    if (json['video'] != null) {
+      video = json['video']['url'];
+    } else {
+      video = '';
+    }
+
+    content = json['described'];
+    time = json['created'];
+    feel = int.parse(json['feel'].toString());
+    commentMark = int.parse(json['comment_mark'].toString());
+    isFelt = int.parse(json['is_felt'].toString());
+    isBlocked = int.parse(json['is_blocked'].toString());
+    canEdit = int.parse(json['can_edit'].toString());
+    banned = int.parse(json['banned'].toString());
+    state = json['state'];
+    user = User.fromJson(json['author']);
+    like = 1000;
+    love = 7300;
+    comment = 258;
+    haha = 235;
+    share = 825;
+    lovelove = 212;
+    wow = 9;
+    layout = 'frame';
+    shareWith = 'public';
+    type = '';
+    sad = 267;
+    angry = 0;
+  }
+
+  // Map<String, dynamic> toJson() {
+  //   late _data = <String, dynamic>{};
+  //   _data['id'] = id;
+  //   _data['productName'] = productName;
+  //   _data['productDescription'] = productDescription;
+  //   _data['productPrice'] = productPrice;
+  //   _data['productImage'] = productImage;
+  //   return _data;
+  // }
 }

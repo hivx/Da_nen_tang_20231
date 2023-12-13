@@ -13,7 +13,7 @@ import '../../personal-page/screens/personal_page_screen.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  const PostCard({super.key, required this.post});
+  const PostCard({Key? key, required this.post}) : super(key: key);
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -89,7 +89,7 @@ class _PostCardState extends State<PostCard> {
 
   _calculateImageDimension() async {
     Completer<Size> completer = Completer();
-    Image image = Image.asset(widget.post.image![0]);
+    Image image = Image.network(widget.post.image![0]);
     image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
@@ -142,7 +142,7 @@ class _PostCardState extends State<PostCard> {
                           child: CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage(widget.post.user.avatar),
+                                NetworkImage(widget.post.user.avatar),
                           ),
                         ),
                         Padding(
@@ -883,7 +883,7 @@ class _PostCardState extends State<PostCard> {
                         Navigator.pushNamed(context, ImageFullScreen.routeName,
                             arguments: widget.post);
                       },
-                      child: Image.asset((widget.post.image != null)
+                      child: Image.network((widget.post.image != null)
                           ? widget.post.image![0]
                           : widget.post.video![0]),
                     )
@@ -903,7 +903,7 @@ class _PostCardState extends State<PostCard> {
                                       arguments: widget.post,
                                     );
                                   },
-                                  child: Image.asset(
+                                  child: Image.network(
                                     widget.post.image![0],
                                     width: (widget.post.image!.length > 2 &&
                                             widget.post.image!.length < 5)
@@ -937,7 +937,7 @@ class _PostCardState extends State<PostCard> {
                                           arguments: widget.post,
                                         );
                                       },
-                                      child: Image.asset(
+                                      child: Image.network(
                                         widget.post.image![1],
                                         width:
                                             MediaQuery.of(context).size.width /
@@ -1013,7 +1013,7 @@ class _PostCardState extends State<PostCard> {
                                             },
                                             child: Stack(
                                               children: [
-                                                Image.asset(
+                                                Image.network(
                                                   widget.post.image![i],
                                                   width: widget.post.image!
                                                                   .length >
@@ -1171,7 +1171,7 @@ class _PostCardState extends State<PostCard> {
                                           },
                                           child: Stack(
                                             children: [
-                                              Image.asset(
+                                              Image.network(
                                                 widget.post.image![i],
                                                 width: (MediaQuery.of(context)
                                                             .size
@@ -1236,7 +1236,7 @@ class _PostCardState extends State<PostCard> {
                                             arguments: widget.post,
                                           );
                                         },
-                                        child: Image.asset(
+                                        child: Image.network(
                                           widget.post.image![0],
                                           width: double.infinity,
                                           height: min(200, leftImageHeight),
@@ -1306,7 +1306,7 @@ class _PostCardState extends State<PostCard> {
                                                 },
                                                 child: Stack(
                                                   children: [
-                                                    Image.asset(
+                                                    Image.network(
                                                       widget.post.image![i],
                                                       width: (MediaQuery.of(
                                                                       context)
@@ -1394,7 +1394,7 @@ class _PostCardState extends State<PostCard> {
                                                   arguments: widget.post,
                                                 );
                                               },
-                                              child: Image.asset(
+                                              child: Image.network(
                                                 widget.post.image![0],
                                                 width: (MediaQuery.of(context)
                                                             .size
@@ -1428,7 +1428,7 @@ class _PostCardState extends State<PostCard> {
                                                       arguments: widget.post,
                                                     );
                                                   },
-                                                  child: Image.asset(
+                                                  child: Image.network(
                                                     widget.post.image![1],
                                                     width:
                                                         (MediaQuery.of(context)
@@ -1509,7 +1509,7 @@ class _PostCardState extends State<PostCard> {
                                                         },
                                                         child: Stack(
                                                           children: [
-                                                            Image.asset(
+                                                            Image.network(
                                                               widget.post
                                                                   .image![i],
                                                               width: (MediaQuery.of(

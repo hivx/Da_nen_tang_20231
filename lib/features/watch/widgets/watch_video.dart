@@ -38,18 +38,17 @@ class _WatchVideoState extends State<WatchVideo> {
     if (widget.controller.value == null ||
         (widget.controller.value != null &&
             !widget.controller.value!.value.isInitialized)) {
-      widget.controller.value =
-          VideoPlayerController.asset(widget.post.video![0])
-            ..initialize().then((value) {
-              setState(() {
-                widget.controller.value?.setVolume(1.0);
-                if (widget.autoPlay == true) {
-                  if (WatchScreen.offset == 0) {
-                    widget.controller.value?.play();
-                  }
-                }
-              });
-            });
+      widget.controller.value = VideoPlayerController.asset(widget.post.video!)
+        ..initialize().then((value) {
+          setState(() {
+            widget.controller.value?.setVolume(1.0);
+            if (widget.autoPlay == true) {
+              if (WatchScreen.offset == 0) {
+                widget.controller.value?.play();
+              }
+            }
+          });
+        });
     } else {
       widget.controller.value?.play();
     }

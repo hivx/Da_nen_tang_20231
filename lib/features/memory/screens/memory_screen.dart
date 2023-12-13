@@ -165,7 +165,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
                       vertical: 15,
                     ),
                     child: Text(
-                      'Chúng tôi hy vọng bạn thích ôn lại và chia sẻ kỷ niệm trên anti_facebook_app, từ các kỷ niệm gần đây nhất đến những kỷ niệm ngày xa xưa.',
+                      'Chúng tôi hy vọng bạn thích ôn lại và chia sẻ kỷ niệm trên Facebook, từ các kỷ niệm gần đây nhất đến những kỷ niệm ngày xa xưa.',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.normal,
