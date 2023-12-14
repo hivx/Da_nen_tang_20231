@@ -63,29 +63,66 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
-  }) {
+  })
+    {
+      return User(
+        name: name ?? this.name,
+        avatar: avatar ?? this.avatar,
+        verified: verified ?? this.verified,
+        cover: cover ?? this.cover,
+        friends: friends ?? this.friends,
+        likes: likes ?? this.likes,
+        followers: followers ?? this.followers,
+        hobbies: hobbies ?? this.hobbies,
+        stories: stories ?? this.stories,
+        topFriends: topFriends ?? this.topFriends,
+        hometown: hometown ?? this.hometown,
+        socialMedias: socialMedias ?? this.socialMedias,
+        bio: bio ?? this.bio,
+        type: type ?? this.type,
+        educations: educations ?? this.educations,
+        guard: guard ?? this.guard,
+        posts: posts ?? this.posts,
+        pageType: pageType ?? this.pageType,
+        address: address ?? this.address,
+      );
+    }
+
+    // Thêm phương thức factory fromJson
+  factory User.fromJson(Map<String, dynamic> json)
+  {
     return User(
-      name: name ?? this.name,
-      avatar: avatar ?? this.avatar,
-      verified: verified ?? this.verified,
-      cover: cover ?? this.cover,
-      friends: friends ?? this.friends,
-      likes: likes ?? this.likes,
-      followers: followers ?? this.followers,
-      hobbies: hobbies ?? this.hobbies,
-      stories: stories ?? this.stories,
-      topFriends: topFriends ?? this.topFriends,
-      hometown: hometown ?? this.hometown,
-      socialMedias: socialMedias ?? this.socialMedias,
-      bio: bio ?? this.bio,
-      type: type ?? this.type,
-      educations: educations ?? this.educations,
-      guard: guard ?? this.guard,
-      posts: posts ?? this.posts,
-      pageType: pageType ?? this.pageType,
-      address: address ?? this.address,
+      name: json['name'] ?? '',
+      // Sử dụng '??' để kiểm tra null và cung cấp một giá trị mặc định (trong trường hợp 'name' không tồn tại hoặc null)
+      avatar: json['avatar'] ?? '',
+      // verified: json['verified'],
+      // cover: json['cover'],
+      // friends: json['friends'],
+      // likes: json['likes'],
+      // followers: json['followers'],
+      // hobbies: List<String>.from(json['hobbies'] ?? []),
+      // Sử dụng '?? []' để cung cấp một list rỗng nếu 'hobbies' là null
+      // stories: (json['stories'] as List<dynamic>?)
+      //     ?.map((storyJson) => Story.fromJson(storyJson))
+      //     .toList() ??
+      //     [],
+      // Sử dụng '?.map' để kiểm tra null trước khi ánh xạ, '?? []' để cung cấp một list rỗng nếu 'stories' là null
+      // topFriends: (json['topFriends'] as List<dynamic>?)
+      //     ?.map((friendJson) => User.fromJson(friendJson))
+      //     .toList() ??
+      //     [],
+      // Tương tự như trên cho 'topFriends'
+      // Xử lý các trường còn lại tương tự
+      // hometown: json['hometown'],
+      // bio: json['bio'],
+      // type: json['type'],
+      // guard: json['guard'],
+      // pageType: json['pageType'],
+      address: json['address'],
+      // Và các trường khác nếu cần
     );
   }
+
 }
 
 class Education {

@@ -1,11 +1,51 @@
 import 'package:anti_facebook_app/models/user.dart';
 import 'package:flutter/material.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../models/post.dart';
 import '../models/story.dart';
 
 class UserProvider extends ChangeNotifier {
-  final User _user = User(
+  final String authToken =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NzA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI0NTE1MTV9.QpTRllEZhZUwEJeV7LJQWhpal0Llrgog43HGr7zxWAU";
+  final String getUserInfor =
+      'https://it4788.catan.io.vn/get_user_info';
+  late String userName;
+  late String avatar;
+
+  Future fetchUserData() async {
+    var data = {
+      "user_id": "708"
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(getUserInfor),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode == 201) {
+        var responseData = json.decode(response.body);
+        Map<String, dynamic> data = responseData['data'];
+        userName = data['username'];
+        avatar = data['avatar'];
+
+      } else {
+        throw Exception(
+            'Failed to get data. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error4: $e');
+      throw Exception('Failed to get data');
+    }
+  }
+
+  User _user = User(
     name: 'Lê Công Đắt',
     avatar: 'assets/images/user/lcd.jpg',
     educations: [

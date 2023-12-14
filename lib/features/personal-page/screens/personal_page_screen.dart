@@ -4,6 +4,7 @@ import 'package:anti_facebook_app/features/news-feed/widgets/story_card.dart';
 import 'package:anti_facebook_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'edit_user_page.dart';
 
 import '../../../models/user.dart';
 import '../../news-feed/widgets/post_card.dart';
@@ -22,9 +23,39 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   final Random random = Random();
   bool isMine = false;
   int mutualFriends = 0;
+
+  void _goToEditUserPage() {
+    String defaultAvatarImagePath = 'assets/images/user/lcd.jpg';
+    String defaultCoverImagePath = 'assets/images/user/lcd-cover.jpg';
+    String defaultDescription = 'Mô tả bản thân ...';
+    String defaultWork = 'Hà Nội';
+    String defaultHome = 'Hà Nội';
+    String defaultPlace = 'Đà Nẵng';
+    int defaultFollower = 91;
+    String defaultSchool = 'Học vấn';
+    String defaultRelationship = 'Tình trạng mối quan hệ';
+
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditUserPage(avatarImagePath: defaultAvatarImagePath,
+            coverImagePath: defaultCoverImagePath,
+            description: defaultDescription,
+            work: defaultWork,
+            home: defaultHome,
+            place: defaultPlace,
+            follower: defaultFollower,
+            school: defaultSchool,
+            relationship: defaultRelationship),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<UserProvider>(context).user;
+    Provider.of<UserProvider>(context).fetchUserData();
     if (widget.user.avatar != user.avatar) {
       user = widget.user;
 
@@ -435,7 +466,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {_goToEditUserPage();},
                                       style: ElevatedButton.styleFrom(
                                         shadowColor: Colors.transparent,
                                         shape: RoundedRectangleBorder(
@@ -456,13 +487,13 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                           SizedBox(
                                             width: 5,
                                           ),
-                                          Text(
-                                            'Chỉnh sửa trang cá nhân',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                            ),
-                                          ),
+                                           Text(
+                                                'Chỉnh sửa trang cá nhân',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
                                         ],
                                       )),
                                 ),
