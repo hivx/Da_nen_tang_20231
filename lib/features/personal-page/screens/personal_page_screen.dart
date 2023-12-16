@@ -5,6 +5,7 @@ import 'package:anti_facebook_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'edit_user_page.dart';
+import 'user_page_setting.dart';
 
 import '../../../models/user.dart';
 import '../../news-feed/widgets/post_card.dart';
@@ -48,6 +49,15 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
             follower: defaultFollower,
             school: defaultSchool,
             relationship: defaultRelationship),
+      ),
+    );
+  }
+
+  void _goToUserPageSetting() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditUserPageSetting(),
       ),
     );
   }
@@ -501,7 +511,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                   width: 10,
                                 ),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {_goToUserPageSetting();},
                                   style: ElevatedButton.styleFrom(
                                     shadowColor: Colors.transparent,
                                     shape: RoundedRectangleBorder(
