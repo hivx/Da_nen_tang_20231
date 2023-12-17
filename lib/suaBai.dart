@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:anti_facebook_app/features/home/screens/home_screen.dart';
+import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/utils/httpRequest.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-class DangBai extends StatefulWidget {
-  const DangBai({super.key});
+class SuaBai extends StatefulWidget {
+  final Post post;
+  const SuaBai({
+    Key? key,
+    required this.post,
+  }) : super(key: key);
 
   @override
-  _DangBaiWidgetState createState() => _DangBaiWidgetState();
+  _SuaBaiWidgetState createState() => _SuaBaiWidgetState();
 }
 
-class _DangBaiWidgetState extends State<DangBai> {
+class _SuaBaiWidgetState extends State<SuaBai> {
   get confirm => null;
   bool isColumnVisible = true;
   bool expanded = false;
@@ -23,6 +27,7 @@ class _DangBaiWidgetState extends State<DangBai> {
   List<String> _imagePaths = [];
   final picker = ImagePicker();
   List<File> images = [];
+  TextEditingController _controller = TextEditingController();
 
   String imagePath = "";
 
@@ -31,6 +36,7 @@ class _DangBaiWidgetState extends State<DangBai> {
   @override
   void initState() {
     super.initState();
+    _controller.text = widget.post.content.toString();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         setState(() {
@@ -58,14 +64,24 @@ class _DangBaiWidgetState extends State<DangBai> {
 
   Future uploadImagesToServer() async {
     try {
+      print({
+        'video': '',
+        'id': widget.post.id,
+        // 'image': [],
+        "described": described,
+        "status": "tuyệt",
+        "auto_accept": "1"
+      });
       await addPostWithImages(
-          '/add_post',
+          '/edit_post',
           {
             'video': '',
-            // 'image': [],
+            'id': widget.post.id.toString(),
             "described": described,
             "status": "tuyệt",
-            "auto_accept": "1"
+            "auto_accept": "1",
+            'image_del': '',
+            'image_sort': '',
           },
           images);
       Navigator.pushReplacement(
@@ -176,7 +192,7 @@ class _DangBaiWidgetState extends State<DangBai> {
                   TextButton(
                     onPressed: uploadImagesToServer,
                     child: const Text(
-                      'Đăng',
+                      'Lưu',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -338,6 +354,7 @@ class _DangBaiWidgetState extends State<DangBai> {
                           Container(
                             padding: EdgeInsets.all(8.0),
                             child: TextField(
+                              controller: _controller,
                               focusNode: _focusNode,
                               maxLines: null,
                               expands: true,

@@ -614,7 +614,7 @@ class _WatchVideoState extends State<WatchVideo> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          'Ẩn bài viết',
+                                                          'Xóa video',
                                                           style: TextStyle(
                                                             color: Colors.black,
                                                             fontWeight:
