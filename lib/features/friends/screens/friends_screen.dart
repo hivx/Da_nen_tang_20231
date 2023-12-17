@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../../../models/user.dart';
 import 'package:http/http.dart' as http;
 
+import '../../personal-page/screens/personal_page_screen.dart';
+
 class FriendsScreen extends StatefulWidget {
   static const String routeName = '/friends-screen';
   const FriendsScreen({super.key});
@@ -326,169 +328,178 @@ class _FriendsScreenState extends State<FriendsScreen> {
             for (int i = 0; i < friends.length; i++)
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black12,
-                          width: 0.5,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      PersonalPageScreen.routeName,
+                      arguments: friends[i].user,
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      DecoratedBox(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black12,
+                            width: 0.5,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          backgroundImage: NetworkImage(friends[i].user.avatar),
+                          radius: 46,
                         ),
                       ),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(friends[i].user.avatar),
-                        radius: 46,
+                      const SizedBox(
+                        width: 10,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                friends[i].user.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  friends[i].user.name,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                friends[i].time,
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 14,
+                                Text(
+                                  friends[i].time,
+                                  style: const TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          if (friends[i].mutualFriends != null &&
-                              friends[i].mutualFriends! > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 2,
-                              ),
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      friends[i].f2 != null
-                                          ? const SizedBox(
-                                        width: 46,
-                                        height: 28,
-                                      )
-                                          : const SizedBox(
-                                        width: 28,
-                                        height: 28,
-                                      ),
-                                      if (friends[i].f2 != null)
-                                        Positioned(
-                                          left: 22,
-                                          top: 2,
-                                          child: CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                friends[i].f2!.avatar),
-                                            radius: 12,
-                                          ),
+                              ],
+                            ),
+                            if (friends[i].mutualFriends != null &&
+                                friends[i].mutualFriends! > 0)
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 2,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        friends[i].f2 != null
+                                            ? const SizedBox(
+                                          width: 46,
+                                          height: 28,
+                                        )
+                                            : const SizedBox(
+                                          width: 28,
+                                          height: 28,
                                         ),
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2,
+                                        if (friends[i].f2 != null)
+                                          Positioned(
+                                            left: 22,
+                                            top: 2,
+                                            child: CircleAvatar(
+                                              backgroundImage: NetworkImage(
+                                                  friends[i].f2!.avatar),
+                                              radius: 12,
                                             ),
                                           ),
-                                          child: CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                friends[i].f1!.avatar),
-                                            radius: 12,
+                                        Positioned(
+                                          left: 0,
+                                          top: 0,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                color: Colors.white,
+                                                width: 2,
+                                              ),
+                                            ),
+                                            child: CircleAvatar(
+                                              backgroundImage: NetworkImage(
+                                                  friends[i].f1!.avatar),
+                                              radius: 12,
+                                            ),
                                           ),
                                         ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${friends[i].mutualFriends} bạn chung',
+                                      style: const TextStyle(
+                                        color: Colors.black54,
+                                        fontSize: 14,
                                       ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    '${friends[i].mutualFriends} bạn chung',
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 14,
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
+                            const SizedBox(
+                              height: 5,
                             ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setAcceptFriend(friends[i].user.userId, "1", i);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shadowColor: Colors.transparent,
-                                    backgroundColor: Colors.blue[700],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setAcceptFriend(friends[i].user.userId, "1", i);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shadowColor: Colors.transparent,
+                                      backgroundColor: Colors.blue[700],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                     ),
-                                  ),
-                                  child: const Text(
-                                    'Chấp nhận',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setAcceptFriend(friends[i].user.userId, "0", i);
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shadowColor: Colors.transparent,
-                                    backgroundColor: Colors.grey[300],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Xóa',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
+                                    child: const Text(
+                                      'Chấp nhận',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      setAcceptFriend(friends[i].user.userId, "0", i);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shadowColor: Colors.transparent,
+                                      backgroundColor: Colors.grey[300],
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Xóa',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               )
           ],

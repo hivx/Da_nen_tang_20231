@@ -126,6 +126,7 @@ class UserProvider extends ChangeNotifier {
     country: "hn",
     link: "",
     userId: "375",
+    coins: "50",
   );
   User get user => _user;
 

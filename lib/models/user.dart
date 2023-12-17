@@ -26,6 +26,7 @@ class User {
   late String? country;
   late String? link;
   late String? userId;
+  late String? coins;
   User({
     this.id,
     required this.name,
@@ -51,6 +52,7 @@ class User {
     this.country,
     this.link,
     this.userId,
+    this.coins,
   });
 
   User copyWith({
@@ -78,6 +80,7 @@ class User {
     String? country,
     String? link,
     String? userId,
+    String? coins,
   }) {
     return User(
       id: id ?? this.id,
@@ -104,6 +107,7 @@ class User {
       country: country ?? this.country,
       link: link ?? this.link,
       userId: userId ?? this.userId,
+      coins: coins ?? this.coins,
     );
   }
 
