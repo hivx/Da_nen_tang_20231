@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SearchBarApp extends StatefulWidget {
-  const SearchBarApp({super.key});
+  const SearchBarApp({Key? key}) : super(key: key);
 
   @override
   State<SearchBarApp> createState() => _SearchBarAppState();
@@ -14,6 +14,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
   List<String> items = [];
 
   List<String> filteredItems = [];
+
   @override
   void initState() {
     super.initState();
@@ -32,8 +33,8 @@ class _SearchBarAppState extends State<SearchBarApp> {
       filteredItems = List.from(items);
     } else {
       filteredItems = items
-          .where(
-              (item) => item.toLowerCase().contains(searchText.toLowerCase()))
+          .where((item) =>
+          item.toLowerCase().contains(searchText.toLowerCase()))
           .toList();
     }
   }
@@ -43,10 +44,7 @@ class _SearchBarAppState extends State<SearchBarApp> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        /* if the search button is clickable then show
-         the container otherwise text "Search Bar"*/
-        title: isSearchClicked
-            ? Container(
+        title: Container(
           height: 40,
           decoration: BoxDecoration(
             color: Colors.white,
@@ -56,13 +54,13 @@ class _SearchBarAppState extends State<SearchBarApp> {
             controller: _searchController,
             onChanged: _onSearchChanged,
             decoration: const InputDecoration(
-                contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
-                hintStyle: TextStyle(color: Colors.black),
-                border: InputBorder.none,
-                hintText: 'Search..'),
+              contentPadding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+              hintStyle: TextStyle(color: Colors.black),
+              border: InputBorder.none,
+              hintText: 'Tìm kiếm',
+            ),
           ),
-        )
-            : const Text("Search Bar"),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -74,18 +72,18 @@ class _SearchBarAppState extends State<SearchBarApp> {
                 }
               });
             },
-            icon: Icon(isSearchClicked ? Icons.close : Icons.search),
+            icon: Icon(isSearchClicked ? Icons.close : null),
           )
         ],
       ),
-      // body parts
       body: ListView.builder(
-          itemCount: filteredItems.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(filteredItems[index]),
-            );
-          }),
+        itemCount: filteredItems.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(filteredItems[index]),
+          );
+        },
+      ),
     );
   }
 }
