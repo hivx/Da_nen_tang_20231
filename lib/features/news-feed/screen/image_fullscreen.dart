@@ -1,6 +1,7 @@
 import 'package:anti_facebook_app/features/comment/screens/comment_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/widgets/post_content.dart';
 import 'package:anti_facebook_app/models/post.dart';
+import 'package:anti_facebook_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 class ImageFullScreen extends StatefulWidget {
@@ -20,73 +21,12 @@ class _ImageFullScreenState extends State<ImageFullScreen> {
   @override
   void initState() {
     super.initState();
-    List<int> list = [
-      widget.post.like != null ? widget.post.like! : 0,
-      widget.post.haha != null ? widget.post.haha! : 0,
-      widget.post.love != null ? widget.post.love! : 0,
-      widget.post.lovelove != null ? widget.post.lovelove! : 0,
-      widget.post.wow != null ? widget.post.wow! : 0,
-      widget.post.sad != null ? widget.post.sad! : 0,
-      widget.post.angry != null ? widget.post.angry! : 0
-    ];
-    list.sort((a, b) => b - a);
-    int sum = 0;
-    for (int i = 0; i < list.length; i++) {
-      sum += list[i];
-    }
-    setState(() {
-      reactions = '';
-      String tmp = sum.toString();
-      int x = 0;
-      for (int i = tmp.length - 1; i > 0; i--) {
-        x++;
-        reactions = '${tmp[i]}$reactions';
-        if (x == 3) reactions = '.$reactions';
-      }
-      reactions = '${tmp[0]}$reactions';
-      icons = [];
-      if (list[0] > 0) {
-        if (list[0] == widget.post.like) {
-          icons.add('assets/images/reactions/like.png');
-        } else if (list[0] == widget.post.haha) {
-          icons.add('assets/images/reactions/haha.png');
-        } else if (list[0] == widget.post.love) {
-          icons.add('assets/images/reactions/love.png');
-        } else if (list[0] == widget.post.lovelove) {
-          icons.add('assets/images/reactions/care.png');
-        } else if (list[0] == widget.post.wow) {
-          icons.add('assets/images/reactions/wow.png');
-        } else if (list[0] == widget.post.sad) {
-          icons.add('assets/images/reactions/sad.png');
-        } else if (list[0] == widget.post.angry) {
-          icons.add('assets/images/reactions/angry.png');
-        }
-      }
 
-      if (list[1] > 0) {
-        if (list[1] == widget.post.like &&
-            icons[0] != 'assets/images/reactions/like.png') {
-          icons.add('assets/images/reactions/like.png');
-        } else if (list[1] == widget.post.haha &&
-            icons[0] != 'assets/images/reactions/haha.png') {
-          icons.add('assets/images/reactions/haha.png');
-        } else if (list[1] == widget.post.love &&
-            icons[0] != 'assets/images/reactions/love.png') {
-          icons.add('assets/images/reactions/love.png');
-        } else if (list[1] == widget.post.lovelove &&
-            icons[0] != 'assets/images/reactions/care.png') {
-          icons.add('assets/images/reactions/care.png');
-        } else if (list[1] == widget.post.wow &&
-            icons[0] != 'assets/images/reactions/wow.png') {
-          icons.add('assets/images/reactions/wow.png');
-        } else if (list[1] == widget.post.sad &&
-            icons[0] != 'assets/images/reactions/sad.png') {
-          icons.add('assets/images/reactions/sad.png');
-        } else if (list[1] == widget.post.angry &&
-            icons[0] != 'assets/images/reactions/angry.png') {
-          icons.add('assets/images/reactions/angry.png');
-        }
-      }
+    setState(() {
+      icons = [
+        'assets/images/reactions/like.png',
+        'assets/images/reactions/love.png'
+      ];
     });
   }
 
@@ -170,7 +110,7 @@ class _ImageFullScreenState extends State<ImageFullScreen> {
                                   right: 15,
                                 ),
                                 child: Text(
-                                  widget.post.time.toUpperCase(),
+                                  formatDate(widget.post.time),
                                   style: TextStyle(
                                     color: Colors.grey[300],
                                     fontSize: 12,
@@ -210,7 +150,7 @@ class _ImageFullScreenState extends State<ImageFullScreen> {
                                       width: 5,
                                     ),
                                     Text(
-                                      'NHẮN TIN CHO ${widget.post.user.name.toUpperCase()}',
+                                      'NHẮN TIN CHO ${widget.post.user.name}',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 13,
@@ -279,15 +219,14 @@ class _ImageFullScreenState extends State<ImageFullScreen> {
                                         ],
                                       ),
                                     ),
-                                    if (reactions.isNotEmpty)
-                                      Text(
-                                        reactions,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                    Text(
+                                      widget.post.feel.toString(),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
                                       ),
+                                    ),
                                   ],
                                 ),
                                 Row(

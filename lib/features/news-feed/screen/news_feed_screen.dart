@@ -109,7 +109,7 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
   Future<void> _callAPI() async {
     try {
       Map<String, dynamic> requestData = {
-        "user_id": "614",
+        "user_id": "608",
         "index": "0",
         "count": "10"
       };

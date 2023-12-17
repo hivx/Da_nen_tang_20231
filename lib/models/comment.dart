@@ -2,6 +2,8 @@ import 'package:anti_facebook_app/models/user.dart';
 
 List<Comment> commentsFromJson(dynamic str) =>
     List<Comment>.from(str.map((x) => Comment.fromJson(x)));
+List<Comment> repliesFromJson(dynamic str) =>
+    List<Comment>.from(str.map((x) => Comment.replies(x)));
 
 class Comment {
   late User user;
@@ -29,11 +31,25 @@ class Comment {
   Comment.fromJson(Map<String, dynamic> json) {
     print('this is comment');
     id = int.parse(json['id'].toString());
-    content = json['mark_content'];
     time = json['created'];
     typeOfMark = int.parse(json['type_of_mark'].toString());
     content = json['mark_content'];
     user = User.fromJson(json['poster']);
-    if (json['comments'].isEmpty) replies = commentsFromJson(json['comments']);
+    if (json['comments'].isNotEmpty) {
+      replies = repliesFromJson(json['comments']);
+    } else {
+      replies = [];
+    }
+    print('da vao model');
+  }
+
+  Comment.replies(Map<String, dynamic> json) {
+    id = -1;
+    print('this is comment');
+    content = json['content'];
+    time = json['created'];
+    user = User.fromJson(json['poster']);
+    replies = [];
+    print('da vao model');
   }
 }
