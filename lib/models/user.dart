@@ -15,13 +15,18 @@ class User {
   late List<User>? topFriends;
   late String? hometown;
   List<SocialMedia>? socialMedias;
-  late String? bio;
-  late String? type;
-  late List<Education>? educations;
-  late bool? guard;
-  late List<Post>? posts;
-  late String? pageType;
-  late String? address;
+  
+  final String? bio;
+  final String? type;
+  final List<Education>? educations;
+  final bool? guard;
+  final List<Post>? posts;
+  final String? pageType;
+  final String? address;
+  final String? city;
+  final String? country;
+  final String? link;
+  final String? userId;
   User({
     this.id,
     required this.name,
@@ -43,6 +48,10 @@ class User {
     this.posts,
     this.pageType,
     this.address,
+    this.city,
+    this.country,
+    this.link,
+    this.userId,
   });
 
   User copyWith({
@@ -66,6 +75,10 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
+    String? city,
+    String? country,
+    String? link,
+    String? userId,
   }) {
     return User(
       id: id ?? this.id,
@@ -88,6 +101,10 @@ class User {
       posts: posts ?? this.posts,
       pageType: pageType ?? this.pageType,
       address: address ?? this.address,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      link: link ?? this.link,
+      userId: userId ?? this.userId,
     );
   }
 

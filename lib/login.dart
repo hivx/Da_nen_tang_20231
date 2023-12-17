@@ -1,32 +1,32 @@
-// import 'package:flutter/material.dart';
-// import 'login_another_account.dart';
-// import 'login_with_an_existing_account.dart';
+import 'package:flutter/material.dart';
+import 'login_another_account.dart';
+import 'login_with_an_existing_account.dart';
 
-// PageRouteBuilder _customPageRoute(Widget page) {
-//   return PageRouteBuilder(
-//     pageBuilder: (context, animation, secondaryAnimation) => page,
-//     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-//       const begin = Offset(1.0, 0.0);
-//       const end = Offset.zero;
-//       const curve = Curves.easeInOut;
-//       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-//       var offsetAnimation = animation.drive(tween);
-//       return SlideTransition(
-//         position: offsetAnimation,
-//         child: child,
-//       );
-//     },
-//   );
-// }
+PageRouteBuilder _customPageRoute(Widget page) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => page,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeInOut;
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+      var offsetAnimation = animation.drive(tween);
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
+    },
+  );
+}
 
-// class Login extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() {
-//     return LoginWidget();
-//   }
-// }
+class Login extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return LoginWidget();
+  }
+}
 
-// class LoginWidget extends State<Login> {
+class LoginWidget extends State<Login> {
 
 //   @override
 //   Widget build(BuildContext context) {
