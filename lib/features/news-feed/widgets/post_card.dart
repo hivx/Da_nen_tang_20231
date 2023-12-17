@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:anti_facebook_app/constants/global_variables.dart';
-import 'package:anti_facebook_app/dangbai.dart';
+import 'package:anti_facebook_app/dangBai.dart';
 import 'package:anti_facebook_app/features/comment/screens/comment_screen.dart';
 import 'package:anti_facebook_app/features/home/screens/home_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/image_fullscreen.dart';
