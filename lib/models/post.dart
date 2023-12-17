@@ -23,7 +23,7 @@ class Post {
   late int? wow;
   late String? layout; // classic, column, quote, frame
   late String? type; //normal, share, memory, ...
-  late String? name = 'tien';
+  late String? name;
   late int? feel;
   late int? commentMark;
   late int? isFelt;
@@ -38,7 +38,6 @@ class Post {
     this.image,
     this.video,
     this.content,
-    // this.checkin,
     this.like,
     this.love,
     this.comment,
@@ -68,7 +67,6 @@ class Post {
     List<String>? image,
     String? video,
     String? content,
-    // String? checkin,
     int? like,
     int? haha,
     int? sad,
@@ -96,7 +94,6 @@ class Post {
       image: image ?? this.image,
       video: video ?? this.video,
       content: content ?? this.content,
-      // checkin: checkin ?? this.checkin,
       like: like ?? this.like,
       haha: haha ?? this.haha,
       sad: sad ?? this.sad,
@@ -129,11 +126,12 @@ class Post {
     } else {
       image = [];
     }
-    if (json['video'] != null) {
+    if (json.containsKey('video')) {
       video = json['video']['url'];
     } else {
       video = '';
     }
+    print(video);
 
     content = json['described'];
     time = json['created'];
@@ -157,15 +155,6 @@ class Post {
     type = '';
     sad = 267;
     angry = 0;
+    print(image);
   }
-
-  // Map<String, dynamic> toJson() {
-  //   late _data = <String, dynamic>{};
-  //   _data['id'] = id;
-  //   _data['productName'] = productName;
-  //   _data['productDescription'] = productDescription;
-  //   _data['productPrice'] = productPrice;
-  //   _data['productImage'] = productImage;
-  //   return _data;
-  // }
 }

@@ -1,6 +1,8 @@
 import 'package:anti_facebook_app/features/comment/widgets/single_comment.dart';
+import 'package:anti_facebook_app/features/personal-page/screens/personal_page_screen.dart';
 import 'package:anti_facebook_app/models/comment.dart';
 import 'package:anti_facebook_app/models/user.dart';
+import 'package:anti_facebook_app/utils/httpRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:anti_facebook_app/models/post.dart';
 
@@ -16,143 +18,188 @@ class CommentScreen extends StatefulWidget {
 enum SortingOption { fit, newest, all }
 
 class _CommentScreenState extends State<CommentScreen> {
+  FocusNode _commentFocus = FocusNode();
   List<String> icons = [];
   String reactions = '0';
   bool isInWidgetTree = true;
   SortingOption _sortingOption = SortingOption.fit;
+  String content = '';
 
-  final List<Comment> comments = [
-    Comment(
-      user: User(
-          name: 'Khánh Vy',
-          avatar: 'assets/images/user/khanhvy.jpg',
-          verified: true),
-      content: 'Kỉ niệm được makeup ở Hàn của tuiii',
-      time: '1 tuần',
-      like: 37,
-      love: 37,
-      lovelove: 3,
-      haha: 2,
-      wow: 1,
-      replies: [
-        Comment(
-          user: User(
-              name: 'Vương Hồng Thúy',
-              avatar: 'assets/images/user/vuonghongthuy.jpg'),
-          content: 'ủa mà chị cao mét bn vậy ạ',
-          time: '1 tuần',
-          replies: [],
-        ),
-        Comment(
-          user: User(
-              name: 'Đài Phát Thanh',
-              avatar: 'assets/images/user/daiphatthanh.jpg'),
-          content: 'xinh đẹp tuyệt vời 🙆‍♀️',
-          time: '1 tuần',
-          replies: [],
-        ),
-      ],
-    ),
-    Comment(
-      user: User(
-          name: 'Minh Hương',
-          avatar: 'assets/images/user/minhhuong.jpg',
-          verified: true),
-      content: 'Sai từ phone kìa chị ơiiii😭😭😭',
-      time: '1 tuần',
-      replies: [
-        Comment(
-          user: User(
-              name: 'Khánh Vy',
-              avatar: 'assets/images/user/khanhvy.jpg',
-              verified: true),
-          content: 'ui chùi gõ lộn tui gõ lại rùii hihi',
-          time: '1 tuần',
-          love: 2,
-          lovelove: 2,
-          replies: [],
-        ),
-      ],
-    ),
-    Comment(
-      user: User(name: 'Hà Linhh', avatar: 'assets/images/user/halinh.jpg'),
-      content: '',
-      time: '1 tuần',
-      image: 'assets/images/two-bears-love.png',
-      replies: [],
-    ),
-    Comment(
-      user: User(
-          name: 'Nguyễn Thị Minh Tuyền',
-          avatar: 'assets/images/user/minhtuyen.jpg'),
-      content:
-          'Chị Vy nhìn đáng yêu quá chừng luôn đó😘😘😘Chúc chị Vy có một ngày mới thật tốt lành và nhiều năng lượng nha❤️❤️❤️Thích chịiii😘😘😘',
-      time: '1 tuần',
-      image: 'assets/images/post/13.jpg',
-      replies: [],
-    ),
+  List<Comment> comments = [
+    // Comment(
+    //   user: User(
+    //       name: 'Khánh Vy',
+    //       avatar: 'assets/images/user/khanhvy.jpg',
+    //       verified: true),
+    //   content: 'Kỉ niệm được makeup ở Hàn của tuiii',
+    //   time: '1 tuần',
+    //   replies: [
+    //     Comment(
+    //       user: User(
+    //           name: 'Vương Hồng Thúy',
+    //           avatar: 'assets/images/user/vuonghongthuy.jpg'),
+    //       content: 'ủa mà chị cao mét bn vậy ạ',
+    //       time: '1 tuần',
+    //       replies: [],
+    //     ),
+    //     Comment(
+    //       user: User(
+    //           name: 'Đài Phát Thanh',
+    //           avatar: 'assets/images/user/daiphatthanh.jpg'),
+    //       content: 'xinh đẹp tuyệt vời 🙆‍♀️',
+    //       time: '1 tuần',
+    //       replies: [],
+    //     ),
+    //   ],
+    // ),
+    // Comment(
+    //   user: User(
+    //       name: 'Minh Hương',
+    //       avatar: 'assets/images/user/minhhuong.jpg',
+    //       verified: true),
+    //   content: 'Sai từ phone kìa chị ơiiii😭😭😭',
+    //   time: '1 tuần',
+    //   replies: [
+    //     Comment(
+    //       user: User(
+    //           name: 'Khánh Vy',
+    //           avatar: 'assets/images/user/khanhvy.jpg',
+    //           verified: true),
+    //       content: 'ui chùi gõ lộn tui gõ lại rùii hihi',
+    //       time: '1 tuần',
+    //       replies: [],
+    //     ),
+    //   ],
+    // ),
+    // Comment(
+    //   user: User(name: 'Hà Linhh', avatar: 'assets/images/user/halinh.jpg'),
+    //   content: '',
+    //   time: '1 tuần',
+    //   image: 'assets/images/two-bears-love.png',
+    //   replies: [],
+    // ),
+    // Comment(
+    //   user: User(
+    //       name: 'Nguyễn Thị Minh Tuyền',
+    //       avatar: 'assets/images/user/minhtuyen.jpg'),
+    //   content:
+    //       'Chị Vy nhìn đáng yêu quá chừng luôn đó😘😘😘Chúc chị Vy có một ngày mới thật tốt lành và nhiều năng lượng nha❤️❤️❤️Thích chịiii😘😘😘',
+    //   time: '1 tuần',
+    //   image: 'assets/images/post/13.jpg',
+    //   replies: [],
+    // ),
   ];
 
   @override
   void initState() {
-    List<int> list = [
-      widget.post.like != null ? widget.post.like! : 0,
-      widget.post.haha != null ? widget.post.haha! : 0,
-      widget.post.love != null ? widget.post.love! : 0,
-      widget.post.lovelove != null ? widget.post.lovelove! : 0,
-      widget.post.wow != null ? widget.post.wow! : 0,
-      widget.post.sad != null ? widget.post.sad! : 0,
-      widget.post.angry != null ? widget.post.angry! : 0
-    ];
-    list.sort((a, b) => b - a);
-    int sum = 0;
-    for (int i = 0; i < list.length; i++) {
-      sum += list[i];
-    }
+    getMarkComment(widget.post.id);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _commentFocus
+          .requestFocus(); // Focus vào TextField khi màn hình được build
+    });
+    // List<int> list = [
+    //   widget.post.like != null ? widget.post.like! : 0,
+    //   widget.post.haha != null ? widget.post.haha! : 0,
+    //   widget.post.love != null ? widget.post.love! : 0,
+    //   widget.post.lovelove != null ? widget.post.lovelove! : 0,
+    //   widget.post.wow != null ? widget.post.wow! : 0,
+    //   widget.post.sad != null ? widget.post.sad! : 0,
+    //   widget.post.angry != null ? widget.post.angry! : 0
+    // ];
+    // list.sort((a, b) => b - a);
+    // int sum = 0;
+    // for (int i = 0; i < list.length; i++) {
+    //   sum += list[i];
+    // }
     setState(() {
-      reactions = '';
-      String tmp = sum.toString();
-      int x = 0;
-      for (int i = tmp.length - 1; i > 0; i--) {
-        x++;
-        reactions = '${tmp[i]}$reactions';
-        if (x == 3) reactions = '.$reactions';
-      }
-      reactions = '${tmp[0]}$reactions';
-      icons = [];
-      if (list[0] == widget.post.like) {
-        icons.add('assets/images/reactions/like.png');
-      } else if (list[0] == widget.post.haha) {
-        icons.add('assets/images/reactions/haha.png');
-      } else if (list[0] == widget.post.love) {
-        icons.add('assets/images/reactions/love.png');
-      } else if (list[0] == widget.post.lovelove) {
-        icons.add('assets/images/reactions/care.png');
-      } else if (list[0] == widget.post.wow) {
-        icons.add('assets/images/reactions/wow.png');
-      } else if (list[0] == widget.post.sad) {
-        icons.add('assets/images/reactions/sad.png');
-      } else if (list[0] == widget.post.angry) {
-        icons.add('assets/images/reactions/angry.png');
-      }
+      // reactions = '';
+      // String tmp = sum.toString();
+      // int x = 0;
+      // for (int i = tmp.length - 1; i > 0; i--) {
+      //   x++;
+      //   reactions = '${tmp[i]}$reactions';
+      //   if (x == 3) reactions = '.$reactions';
+      // }
+      // reactions = '${tmp[0]}$reactions';
+      icons = [
+        'assets/images/reactions/like.png',
+        'assets/images/reactions/love.png'
+      ];
+      // if (list[0] == widget.post.like) {
+      //   icons.add('assets/images/reactions/like.png');
+      // } else if (list[0] == widget.post.haha) {
+      //   icons.add('assets/images/reactions/haha.png');
+      // } else if (list[0] == widget.post.love) {
+      //   icons.add('assets/images/reactions/love.png');
+      // } else if (list[0] == widget.post.lovelove) {
+      //   icons.add('assets/images/reactions/care.png');
+      // } else if (list[0] == widget.post.wow) {
+      //   icons.add('assets/images/reactions/wow.png');
+      // } else if (list[0] == widget.post.sad) {
+      //   icons.add('assets/images/reactions/sad.png');
+      // } else if (list[0] == widget.post.angry) {
+      //   icons.add('assets/images/reactions/angry.png');
+      // }
 
-      if (list[1] == widget.post.like) {
-        icons.add('assets/images/reactions/like.png');
-      } else if (list[1] == widget.post.haha) {
-        icons.add('assets/images/reactions/haha.png');
-      } else if (list[1] == widget.post.love) {
-        icons.add('assets/images/reactions/love.png');
-      } else if (list[1] == widget.post.lovelove) {
-        icons.add('assets/images/reactions/care.png');
-      } else if (list[1] == widget.post.wow) {
-        icons.add('assets/images/reactions/wow.png');
-      } else if (list[1] == widget.post.sad) {
-        icons.add('assets/images/reactions/sad.png');
-      } else if (list[1] == widget.post.angry) {
-        icons.add('assets/images/reactions/angry.png');
-      }
+      // if (list[1] == widget.post.like) {
+      //   icons.add('assets/images/reactions/like.png');
+      // } else if (list[1] == widget.post.haha) {
+      //   icons.add('assets/images/reactions/haha.png');
+      // } else if (list[1] == widget.post.love) {
+      //   icons.add('assets/images/reactions/love.png');
+      // } else if (list[1] == widget.post.lovelove) {
+      //   icons.add('assets/images/reactions/care.png');
+      // } else if (list[1] == widget.post.wow) {
+      //   icons.add('assets/images/reactions/wow.png');
+      // } else if (list[1] == widget.post.sad) {
+      //   icons.add('assets/images/reactions/sad.png');
+      // } else if (list[1] == widget.post.angry) {
+      //   icons.add('assets/images/reactions/angry.png');
+      // }
     });
     super.initState();
+  }
+
+  Future<void> setMarkComment(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "id": id,
+        "content": content,
+        "index": 0,
+        "count": 10,
+        "type": 1,
+      };
+      print(requestData);
+      var result = await callAPIcomment('/set_mark_comment',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      setState(() {});
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  Future<void> getMarkComment(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "id": id,
+        "index": 0,
+        "count": 10,
+      };
+      var result = await callAPIcomment('/get_mark_comment',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      print('day la ket qua');
+      print(result['data']);
+      comments = commentsFromJson(result['data']);
+      setState(() {});
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentFocus.dispose();
+    super.dispose();
   }
 
   @override
@@ -602,6 +649,146 @@ class _CommentScreenState extends State<CommentScreen> {
                                         comment: comments[i],
                                         level: 0,
                                       ),
+                                    //phan input binh luan
+                                    Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.black12,
+                                                  width: 0.5,
+                                                ),
+                                              ),
+                                              child: CircleAvatar(
+                                                radius: 20,
+                                                backgroundImage: NetworkImage(
+                                                    widget.post.user.avatar),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 2),
+                                                    child: Row(
+                                                      children: [
+                                                        InkWell(
+                                                          onTap: () {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              PersonalPageScreen
+                                                                  .routeName,
+                                                              arguments: widget
+                                                                  .post.user,
+                                                            );
+                                                          },
+                                                          child: Text(
+                                                            widget
+                                                                .post.user.name,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  left: 5),
+                                                          child: Icon(
+                                                            Icons.verified,
+                                                            color: Colors.blue,
+                                                            size: 15,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        (widget.post.time),
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.black54,
+                                                            fontSize: 14),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      const Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                top: 2),
+                                                        child: Icon(
+                                                          Icons.circle,
+                                                          size: 2,
+                                                          color: Colors.black54,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      const Icon(
+                                                        Icons.public,
+                                                        color: Colors.black54,
+                                                        size: 14,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: TextField(
+                                                  focusNode: _commentFocus,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        'Viết bình luận...',
+                                                  ),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      content = value;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.send),
+                                                onPressed: () {
+                                                  setMarkComment(
+                                                      widget.post.id);
+                                                  // Xử lý khi bấm nút gửi bình luận
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ),

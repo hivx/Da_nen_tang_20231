@@ -93,6 +93,7 @@ class User {
 
   User.fromJson(Map<String, dynamic> json) {
     id = int.parse(json['id'].toString());
+    print(id);
     name = json['name'];
     avatar = json['avatar'];
     verified = true;
