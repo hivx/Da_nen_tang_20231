@@ -79,12 +79,21 @@ class _SingleCommentState extends State<SingleComment> {
               (widget.comment.content.isNotEmpty)
                   ? Container(
                       width: min(
-                          min(
-                            MediaQuery.of(context).size.width -
-                                15 * 2 -
-                                20 * 2 -
-                                5 -
-                                35 * widget.level,
+                          MediaQuery.of(context).size.width -
+                              15 * 2 -
+                              20 * 2 -
+                              5 -
+                              35 * widget.level,
+                          max(
+                            _textSize(
+                                  widget.comment.user.name,
+                                  const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ).width +
+                                50,
                             _textSize(
                                   widget.comment.content,
                                   const TextStyle(
@@ -92,17 +101,8 @@ class _SingleCommentState extends State<SingleComment> {
                                     overflow: TextOverflow.visible,
                                   ),
                                 ).width +
-                                40,
-                          ),
-                          _textSize(
-                                widget.comment.user.name,
-                                const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  overflow: TextOverflow.visible,
-                                ),
-                              ).width +
-                              50),
+                                20,
+                          )),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],

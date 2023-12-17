@@ -125,37 +125,6 @@ class _CommentScreenState extends State<CommentScreen> {
         'assets/images/reactions/like.png',
         'assets/images/reactions/love.png'
       ];
-      // if (list[0] == widget.post.like) {
-      //   icons.add('assets/images/reactions/like.png');
-      // } else if (list[0] == widget.post.haha) {
-      //   icons.add('assets/images/reactions/haha.png');
-      // } else if (list[0] == widget.post.love) {
-      //   icons.add('assets/images/reactions/love.png');
-      // } else if (list[0] == widget.post.lovelove) {
-      //   icons.add('assets/images/reactions/care.png');
-      // } else if (list[0] == widget.post.wow) {
-      //   icons.add('assets/images/reactions/wow.png');
-      // } else if (list[0] == widget.post.sad) {
-      //   icons.add('assets/images/reactions/sad.png');
-      // } else if (list[0] == widget.post.angry) {
-      //   icons.add('assets/images/reactions/angry.png');
-      // }
-
-      // if (list[1] == widget.post.like) {
-      //   icons.add('assets/images/reactions/like.png');
-      // } else if (list[1] == widget.post.haha) {
-      //   icons.add('assets/images/reactions/haha.png');
-      // } else if (list[1] == widget.post.love) {
-      //   icons.add('assets/images/reactions/love.png');
-      // } else if (list[1] == widget.post.lovelove) {
-      //   icons.add('assets/images/reactions/care.png');
-      // } else if (list[1] == widget.post.wow) {
-      //   icons.add('assets/images/reactions/wow.png');
-      // } else if (list[1] == widget.post.sad) {
-      //   icons.add('assets/images/reactions/sad.png');
-      // } else if (list[1] == widget.post.angry) {
-      //   icons.add('assets/images/reactions/angry.png');
-      // }
     });
     super.initState();
   }

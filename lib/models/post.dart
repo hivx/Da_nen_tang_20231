@@ -131,7 +131,6 @@ class Post {
     } else {
       video = '';
     }
-    print(video);
 
     content = json['described'];
     time = json['created'];
