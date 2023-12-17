@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:anti_facebook_app/models/comment.dart';
+import 'package:anti_facebook_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 class SingleComment extends StatefulWidget {
   final Comment comment;
   final int level;
-  const SingleComment({super.key, required this.comment, required this.level});
+  const SingleComment({Key? key, required this.level, required this.comment})
+      : super(key: key);
 
   @override
   State<SingleComment> createState() => _SingleCommentState();
@@ -29,98 +31,11 @@ class _SingleCommentState extends State<SingleComment> {
   @override
   void initState() {
     super.initState();
-    List<int> list = [
-      widget.comment.like != null ? widget.comment.like! : 0,
-      widget.comment.haha != null ? widget.comment.haha! : 0,
-      widget.comment.love != null ? widget.comment.love! : 0,
-      widget.comment.lovelove != null ? widget.comment.lovelove! : 0,
-      widget.comment.wow != null ? widget.comment.wow! : 0,
-      widget.comment.sad != null ? widget.comment.sad! : 0,
-      widget.comment.angry != null ? widget.comment.angry! : 0
-    ];
-    list.sort((a, b) => b - a);
-    int sum = 0;
-    for (int i = 0; i < list.length; i++) {
-      sum += list[i];
-    }
     setState(() {
-      reactions = '';
-      String tmp = sum.toString();
-      int x = 0;
-      for (int i = tmp.length - 1; i > 0; i--) {
-        x++;
-        reactions = '${tmp[i]}$reactions';
-        if (x == 3) reactions = '.$reactions';
-      }
-      reactions = '${tmp[0]}$reactions';
-      icons = [];
-      if (list[0] > 0) {
-        if (list[0] == widget.comment.like) {
-          icons.add('assets/images/reactions/like.png');
-        } else if (list[0] == widget.comment.haha) {
-          icons.add('assets/images/reactions/haha.png');
-        } else if (list[0] == widget.comment.love) {
-          icons.add('assets/images/reactions/love.png');
-        } else if (list[0] == widget.comment.lovelove) {
-          icons.add('assets/images/reactions/care.png');
-        } else if (list[0] == widget.comment.wow) {
-          icons.add('assets/images/reactions/wow.png');
-        } else if (list[0] == widget.comment.sad) {
-          icons.add('assets/images/reactions/sad.png');
-        } else if (list[0] == widget.comment.angry) {
-          icons.add('assets/images/reactions/angry.png');
-        }
-      }
-
-      if (list[1] > 0) {
-        if (list[1] == widget.comment.like &&
-            icons[0] != 'assets/images/reactions/like.png') {
-          icons.add('assets/images/reactions/like.png');
-        } else if (list[1] == widget.comment.haha &&
-            icons[0] != 'assets/images/reactions/haha.png') {
-          icons.add('assets/images/reactions/haha.png');
-        } else if (list[1] == widget.comment.love &&
-            icons[0] != 'assets/images/reactions/love.png') {
-          icons.add('assets/images/reactions/love.png');
-        } else if (list[1] == widget.comment.lovelove &&
-            icons[0] != 'assets/images/reactions/care.png') {
-          icons.add('assets/images/reactions/care.png');
-        } else if (list[1] == widget.comment.wow &&
-            icons[0] != 'assets/images/reactions/wow.png') {
-          icons.add('assets/images/reactions/wow.png');
-        } else if (list[1] == widget.comment.sad &&
-            icons[0] != 'assets/images/reactions/sad.png') {
-          icons.add('assets/images/reactions/sad.png');
-        } else if (list[1] == widget.comment.angry &&
-            icons[0] != 'assets/images/reactions/angry.png') {
-          icons.add('assets/images/reactions/angry.png');
-        }
-      }
-
-      if (list[2] > 0) {
-        if (list[2] == widget.comment.like &&
-            !icons.contains('assets/images/reactions/like.png')) {
-          icons.add('assets/images/reactions/like.png');
-        } else if (list[2] == widget.comment.haha &&
-            !icons.contains('assets/images/reactions/haha.png')) {
-          icons.add('assets/images/reactions/haha.png');
-        } else if (list[2] == widget.comment.love &&
-            !icons.contains('assets/images/reactions/love.png')) {
-          icons.add('assets/images/reactions/love.png');
-        } else if (list[2] == widget.comment.lovelove &&
-            !icons.contains('assets/images/reactions/care.png')) {
-          icons.add('assets/images/reactions/care.png');
-        } else if (list[2] == widget.comment.wow &&
-            !icons.contains('assets/images/reactions/wow.png')) {
-          icons.add('assets/images/reactions/wow.png');
-        } else if (list[2] == widget.comment.sad &&
-            !icons.contains('assets/images/reactions/sad.png')) {
-          icons.add('assets/images/reactions/sad.png');
-        } else if (list[2] == widget.comment.angry &&
-            !icons.contains('assets/images/reactions/angry.png')) {
-          icons.add('assets/images/reactions/angry.png');
-        }
-      }
+      icons = [
+        'assets/images/reactions/like.png',
+        'assets/images/reactions/love.png'
+      ];
     });
   }
 
@@ -154,7 +69,7 @@ class _SingleCommentState extends State<SingleComment> {
                   shape: BoxShape.circle,
                 ),
                 child: CircleAvatar(
-                  backgroundImage: AssetImage(widget.comment.user.avatar),
+                  backgroundImage: NetworkImage(widget.comment.user.avatar),
                   radius: widget.level > 0 ? 15 : 20,
                 ),
               ),
@@ -164,20 +79,30 @@ class _SingleCommentState extends State<SingleComment> {
               (widget.comment.content.isNotEmpty)
                   ? Container(
                       width: min(
-                        MediaQuery.of(context).size.width -
-                            15 * 2 -
-                            20 * 2 -
-                            5 -
-                            35 * widget.level,
-                        _textSize(
-                              widget.comment.content,
-                              const TextStyle(
-                                fontSize: 16,
-                                overflow: TextOverflow.visible,
-                              ),
-                            ).width +
-                            20,
-                      ),
+                          min(
+                            MediaQuery.of(context).size.width -
+                                15 * 2 -
+                                20 * 2 -
+                                5 -
+                                35 * widget.level,
+                            _textSize(
+                                  widget.comment.content,
+                                  const TextStyle(
+                                    fontSize: 16,
+                                    overflow: TextOverflow.visible,
+                                  ),
+                                ).width +
+                                40,
+                          ),
+                          _textSize(
+                                widget.comment.user.name,
+                                const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  overflow: TextOverflow.visible,
+                                ),
+                              ).width +
+                              50),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
@@ -188,26 +113,28 @@ class _SingleCommentState extends State<SingleComment> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                widget.comment.user.name,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                          Container(
+                            child: Row(
+                              children: [
+                                Text(
+                                  widget.comment.user.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              (widget.comment.user.verified == true
-                                  ? const Padding(
-                                      padding: EdgeInsets.only(left: 2),
-                                      child: Icon(
-                                        Icons.verified,
-                                        color: Colors.blue,
-                                        size: 15,
-                                      ),
-                                    )
-                                  : const SizedBox()),
-                            ],
+                                (widget.comment.user.verified == true
+                                    ? const Padding(
+                                        padding: EdgeInsets.only(left: 2),
+                                        child: Icon(
+                                          Icons.verified,
+                                          color: Colors.blue,
+                                          size: 15,
+                                        ),
+                                      )
+                                    : const SizedBox()),
+                              ],
+                            ),
                           ),
                           const SizedBox(
                             height: 5,
@@ -261,20 +188,20 @@ class _SingleCommentState extends State<SingleComment> {
           const SizedBox(
             height: 5,
           ),
-          if (widget.comment.image != null)
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: 5,
-                left: widget.level == 0 ? 45 : 45 + widget.level * 35,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  widget.comment.image!,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+          // if (widget.comment.image != null)
+          //   Padding(
+          //     padding: EdgeInsets.only(
+          //       bottom: 5,
+          //       left: widget.level == 0 ? 45 : 45 + widget.level * 35,
+          //     ),
+          //     child: ClipRRect(
+          //       borderRadius: BorderRadius.circular(20),
+          //       child: Image.asset(
+          //         widget.comment.image!,
+          //         fit: BoxFit.cover,
+          //       ),
+          //     ),
+          //   ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -283,7 +210,7 @@ class _SingleCommentState extends State<SingleComment> {
                 width: widget.level == 0 ? 50 : 40,
               ),
               Text(
-                widget.comment.time,
+                formatDate(widget.comment.time.toString()),
                 style: const TextStyle(fontSize: 16, color: Colors.black54),
               ),
               const SizedBox(
@@ -382,7 +309,7 @@ class _SingleCommentState extends State<SingleComment> {
                 ),
             ],
           ),
-          if (widget.comment.replies.isNotEmpty && !viewReplies)
+          if (widget.comment.replies!.isNotEmpty && !viewReplies)
             Padding(
               padding: const EdgeInsets.only(top: 5, left: 40),
               child: InkWell(
@@ -392,7 +319,7 @@ class _SingleCommentState extends State<SingleComment> {
                   });
                 },
                 child: Text(
-                  'Xem ${widget.comment.replies.length} phản hồi',
+                  'Xem ${widget.comment.replies!.length} phản hồi',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -401,9 +328,9 @@ class _SingleCommentState extends State<SingleComment> {
               ),
             ),
           if (viewReplies)
-            for (int i = 0; i < widget.comment.replies.length; i++)
+            for (int i = 0; i < widget.comment.replies!.length; i++)
               SingleComment(
-                comment: widget.comment.replies[i],
+                comment: widget.comment.replies![i],
                 level: widget.level + 1,
               ),
         ],

@@ -1,4 +1,5 @@
 import 'package:anti_facebook_app/features/friends/screens/friends_screen.dart';
+import 'package:anti_facebook_app/features/menu/widgets/coin.dart';
 import 'package:anti_facebook_app/features/menu/widgets/menu_choice.dart';
 import 'package:anti_facebook_app/features/menu/widgets/shortcut.dart';
 import 'package:anti_facebook_app/models/user.dart';
@@ -1364,9 +1365,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 ),
                               ],
                             ),
-                            child: const Shortcut(
-                                img: 'assets/images/menu/saved.png',
-                                title: 'Đã lưu'),
+                            child: const Coin(title: 'Mua coin'),
                           ),
                           Container(
                             width: double.infinity,

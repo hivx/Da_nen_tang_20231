@@ -17,18 +17,23 @@ class _HomeAppBarState extends State<HomeAppBar> {
       children: [
         Row(
           children: [
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 15),
-              child: const Text(
-                'anti facebook',
-                style: TextStyle(
-                  color: GlobalVariables.secondaryColor,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
+            IconButton(
+              splashRadius: 20,
+              onPressed: () {},
+              icon: const ImageIcon(
+                AssetImage('assets/images/menu.png'),
+                color: Colors.black,
+                size: 50,
               ),
             ),
-            // Các widgets khác ở đây nếu cần thiết
+            const Text(
+              'facebook',
+              style: TextStyle(
+                color: GlobalVariables.secondaryColor,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         Row(

@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:anti_facebook_app/features/watch/screens/watch_screen.dart';
 import 'package:anti_facebook_app/features/watch/widgets/watch_video.dart';
+import 'package:anti_facebook_app/models/user.dart';
+import 'package:anti_facebook_app/utils/httpRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-// import 'package:video_player/video_player.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../models/post.dart';
-import '../../../models/user.dart';
 
 class WatchOthersScreen extends StatefulWidget {
   final VideoControllerWrapper controllerInit;
@@ -25,77 +28,63 @@ class _WatchOthersScreenState extends State<WatchOthersScreen> {
   ScrollController scrollController = ScrollController();
   int index = 0;
   List<VideoControllerWrapper> videoController = [];
-  final posts = [
-    Post(
-      user: User(name: 'Aki Michio', avatar: 'assets/images/user/aki.jpg'),
-      time: '14 thg 7, 2022',
-      shareWith: 'public',
-      content: 'Kawaiii quá vậy\nAnime : Con của mẹ kế là bạn gái cũ',
-      like: 15000,
-      angry: 3,
-      comment: 210,
-      haha: 3000,
-      love: 1100,
-      lovelove: 78,
-      sad: 36,
-      share: 98,
-      wow: 18,
-      video: ['assets/videos/4.mp4'],
-    ),
-    Post(
-      user: User(
-          name: 'Đài Phát Thanh.',
-          avatar: 'assets/images/user/daiphatthanh.jpg'),
-      time: '17 thg 1, 2021',
-      shareWith: 'public',
-      content:
-          'Bên anh đến khi già nếu anh cũng muốn ta cùng già ..\n-\nGià Cùng Anh Nếu Anh Cũng Muốn Già Cùng Em\nHIỀN MAI / Live Session…',
-      like: 12000,
-      angry: 1,
-      comment: 902,
-      haha: 21,
-      love: 2100,
-      lovelove: 67,
-      sad: 20,
-      share: 98,
-      wow: 5,
-      video: ['assets/videos/5.mp4'],
-    ),
-    Post(
-      user: User(name: 'Spezon', avatar: 'assets/images/user/spezon.jpg'),
-      time: '27 tháng 8',
-      shareWith: 'public',
-      content: 'Lionel Messi World cup Champion [Messi EP. FINAL]',
-      like: 4100,
-      angry: 1,
-      comment: 72,
-      haha: 21,
-      love: 888,
-      lovelove: 100,
-      sad: 20,
-      share: 98,
-      wow: 5,
-      video: ['assets/videos/6.mp4'],
-    ),
+  List<Post> posts = [
+    // Post(
+    //   user: User(name: 'Spezon', avatar: 'https://picsum.photos/250?image=9'),
+    //   time: '27 tháng 8',
+    //   shareWith: 'public',
+    //   content: 'Lionel Messi World cup Champion [Messi EP. FINAL]',
+    //   like: 4100,
+    //   angry: 1,
+    //   comment: 72,
+    //   haha: 21,
+    //   love: 888,
+    //   lovelove: 100,
+    //   sad: 20,
+    //   share: 98,
+    //   wow: 5,
+    //   video:
+    //       'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    // ),
   ];
   List<GlobalKey> key = [];
 
   @override
   void initState() {
     super.initState();
+    // videoController =
+    //     List.generate(posts.length, (index) => VideoControllerWrapper(null));
+    // key = List.generate(
+    //     posts.length, (index) => GlobalKey(debugLabel: index.toString()));
+    _callAPI();
     videoController =
         List.generate(posts.length, (index) => VideoControllerWrapper(null));
     key = List.generate(
         posts.length, (index) => GlobalKey(debugLabel: index.toString()));
+    setState(() {});
+  }
+
+  Future<void> _callAPI() async {
+    try {
+      Map<String, dynamic> requestData = {"index": "0", "count": "10"};
+
+      var result = await callAPI('/get_list_videos',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      posts = postsFromJson(result['post']);
+
+      // setState(() {});
+    } catch (error) {
+      // setState(() {});
+    }
   }
 
   @override
   void dispose() {
     scrollController.dispose();
 
-    /*for (int i = 0; i < videoController.length; i++) {
+    for (int i = 0; i < videoController.length; i++) {
       videoController[i].value?.dispose();
-    }*/
+    }
     super.dispose();
   }
 
