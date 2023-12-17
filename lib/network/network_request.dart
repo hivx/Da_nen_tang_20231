@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anti_facebook_app/models/search_post.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
