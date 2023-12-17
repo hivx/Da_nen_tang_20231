@@ -32,10 +32,7 @@ class FriendRequest {
 
 class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
   final today = DateTime.now();
-  List<FriendRequest> friends = [
-    FriendRequest(user: User(name: "hai1", avatar: "https://scontent.fhan2-4.fna.fbcdn.net/v/t39.30808-6/409817635_756265016540065_2771860455964834016_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=dd5e9f&_nc_eui2=AeFtVnwteJcdL_-bLUgK1DTBCro97kcjPGoKuj3uRyM8anYMgWuyyqdJwmKz8ewtC8Aa50EKZBDK4eQmdNJr6xQ1&_nc_ohc=JgS0f4CB9m8AX9Zxx-n&_nc_ht=scontent.fhan2-4.fna&oh=00_AfCIIYqlB59dc5bJuBt7lOHptJSUALHUmqtsQkEreKEa2w&oe=658085E7"), time: "2 giờ"),
-
-  ];
+  List<FriendRequest> friends = [];
   final String apiGetSuggestFriend =
       'https://it4788.catan.io.vn/get_suggested_friends';
   final String apiSetRequestFriend =
@@ -82,7 +79,7 @@ class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
         setState(() {
           friends = tempFriendRequests;
         });
-
+        print(responseData);
         return responseData;
       } else {
         throw Exception(
@@ -253,6 +250,7 @@ class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
                 ),
               ),
             ),
+            if(friends.isNotEmpty)
             for (int i = 0; i < friends.length; i++)
               Padding(
                 padding: const EdgeInsets.all(10),

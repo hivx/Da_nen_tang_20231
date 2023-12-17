@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:app1/models/search_post.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+
+import '../models/search_post.dart';
 
 class NetworkRequest {
   static const String url = 'https://it4788.catan.io.vn/search';
