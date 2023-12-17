@@ -81,6 +81,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             Expanded(
                               child: InkWell(
                                 onTap: () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HomeScreen()),
+                                  );
                                   setState(() {
                                     index = 0;
                                     toolBarHeight = 60;

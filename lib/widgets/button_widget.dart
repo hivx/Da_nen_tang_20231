@@ -7,7 +7,8 @@ class MyButton extends StatelessWidget {
   final Color textColor;
   final Color buttonColor;
 
-  const MyButton({super.key, 
+  const MyButton({
+    super.key,
     required this.label,
     required this.onPressed,
     this.height = 50.0,
@@ -23,8 +24,8 @@ class MyButton extends StatelessWidget {
         backgroundColor: buttonColor, // Đặt màu nút
         minimumSize: Size(double.infinity, height), // Đặt chiều cao của nút
         shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10), // Đặt góc bo tròn và độ cong của cạnh
-        side: const BorderSide(
+          borderRadius: BorderRadius.circular(10), // Đặt góc bo tròn và độ cong của cạnh
+          side: const BorderSide(
             color: Color(0xFF1878F3), // Màu của đường viền
             width: 2, // Độ rộng của đường viền
           ),
@@ -39,5 +40,3 @@ class MyButton extends StatelessWidget {
     );
   }
 }
-
-

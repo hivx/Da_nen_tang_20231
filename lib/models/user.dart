@@ -2,26 +2,32 @@ import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/models/story.dart';
 
 class User {
-  final String name;
-  final String avatar;
-  bool? verified;
-  final String? cover;
-  final int? friends;
-  final int? likes;
-  final int? followers;
-  final List<String>? hobbies;
-  final List<Story>? stories;
-  final List<User>? topFriends;
-  final String? hometown;
+  late int? id;
+  late String name;
+  late String avatar;
+  late bool? verified;
+  late String? cover;
+  late int? friends;
+  late int? likes;
+  late int? followers;
+  late List<String>? hobbies;
+  late List<Story>? stories;
+  late List<User>? topFriends;
+  late String? hometown;
   List<SocialMedia>? socialMedias;
-  final String? bio;
-  final String? type;
-  final List<Education>? educations;
-  final bool? guard;
-  final List<Post>? posts;
-  final String? pageType;
-  final String? address;
+  late String? bio;
+  late String? type;
+  late List<Education>? educations;
+  late bool? guard;
+  late List<Post>? posts;
+  late String? pageType;
+  late String? address;
+  late String? city;
+  late String? country;
+  late String? link;
+  late String? userId;
   User({
+    this.id,
     required this.name,
     required this.avatar,
     this.verified,
@@ -41,9 +47,14 @@ class User {
     this.posts,
     this.pageType,
     this.address,
+    this.city,
+    this.country,
+    this.link,
+    this.userId,
   });
 
   User copyWith({
+    int? id,
     String? name,
     String? avatar,
     bool? verified,
@@ -63,8 +74,13 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
+    String? city,
+    String? country,
+    String? link,
+    String? userId,
   }) {
     return User(
+      id: id ?? this.id,
       name: name ?? this.name,
       avatar: avatar ?? this.avatar,
       verified: verified ?? this.verified,
@@ -84,7 +100,20 @@ class User {
       posts: posts ?? this.posts,
       pageType: pageType ?? this.pageType,
       address: address ?? this.address,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      link: link ?? this.link,
+      userId: userId ?? this.userId,
     );
+  }
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = int.parse(json['id'].toString());
+    print(id);
+    name = json['name'];
+    avatar = json['avatar'];
+    verified = true;
+    address = 'XM';
   }
 }
 

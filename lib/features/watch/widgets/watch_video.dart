@@ -15,15 +15,16 @@ class WatchVideo extends StatefulWidget {
   bool? autoPlay;
   bool? isDarkMode;
   bool? noDispose;
+
   WatchVideo({
-    super.key,
+    Key? key,
     required this.post,
     required this.videoKey,
     required this.controller,
     this.autoPlay,
     this.isDarkMode,
     this.noDispose,
-  });
+  }) : super(key: key);
 
   @override
   State<WatchVideo> createState() => _WatchVideoState();
@@ -39,7 +40,7 @@ class _WatchVideoState extends State<WatchVideo> {
         (widget.controller.value != null &&
             !widget.controller.value!.value.isInitialized)) {
       widget.controller.value =
-          VideoPlayerController.asset(widget.post.video![0])
+          VideoPlayerController.networkUrl(Uri.parse(widget.post.video!))
             ..initialize().then((value) {
               setState(() {
                 widget.controller.value?.setVolume(1.0);
@@ -124,6 +125,8 @@ class _WatchVideoState extends State<WatchVideo> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      // height: MediaQuery.of(context).size.height * 1, // 60% chiều cao màn hình
+      // width: MediaQuery.of(context).size.width * 1.1,
       color: widget.isDarkMode == true
           ? Colors.black.withOpacity(0.85)
           : Colors.white,
@@ -141,7 +144,7 @@ class _WatchVideoState extends State<WatchVideo> {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundImage: AssetImage(widget.post.user.avatar),
+                      backgroundImage: NetworkImage(widget.post.user.avatar),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
@@ -176,7 +179,7 @@ class _WatchVideoState extends State<WatchVideo> {
                             ),
                           ),
                           SizedBox(
-                            width: 115,
+                            // width: 115,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,

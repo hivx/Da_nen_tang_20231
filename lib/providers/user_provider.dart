@@ -5,8 +5,9 @@ import '../models/post.dart';
 import '../models/story.dart';
 
 class UserProvider extends ChangeNotifier {
-  final User _user = User(
-    name: 'Lê Công Đắt',
+  late User _user = User(
+    name: 'Lê Công ',
+
     avatar: 'assets/images/user/lcd.jpg',
     educations: [
       Education(
@@ -15,6 +16,7 @@ class UserProvider extends ChangeNotifier {
       ),
     ],
     hometown: 'Cai Lậy (huyện)',
+    address: "HN",
     followers: 4820,
     friends: 1150,
     hobbies: [
@@ -39,7 +41,7 @@ class UserProvider extends ChangeNotifier {
     stories: [
       Story(
         user: User(
-          name: 'Lê Công Đắt',
+          name: 'Tiến',
           avatar: 'assets/images/user/lcd.jpg',
         ),
         image: ['assets/images/story/3.jpg'],
@@ -49,7 +51,7 @@ class UserProvider extends ChangeNotifier {
       ),
       Story(
         user: User(
-          name: 'Lê Công Đắt',
+          name: 'Tiến',
           avatar: 'assets/images/user/lcd.jpg',
         ),
         image: [
@@ -65,7 +67,7 @@ class UserProvider extends ChangeNotifier {
       ),
       Story(
         user: User(
-          name: 'Lê Công Đắt',
+          name: 'Tiến',
           avatar: 'assets/images/user/lcd.jpg',
         ),
         video: ['assets/videos/3.mp4'],
@@ -106,7 +108,7 @@ class UserProvider extends ChangeNotifier {
     posts: [
       Post(
         user: User(
-          name: 'Lê Công Đắt',
+          name: 'Tiến',
           avatar: 'assets/images/user/lcd.jpg',
         ),
         time: '3 phút',
@@ -119,58 +121,35 @@ class UserProvider extends ChangeNotifier {
         comment: 5,
         type: 'memory',
       ),
-      Post(
-        user: User(
-          name: 'Lê Công Đắt',
-          avatar: 'assets/images/user/lcd.jpg',
-        ),
-        time: '3 phút',
-        shareWith: 'public',
-        content: 'Do you like Phở?\nBecause I can be your Pho-ever ✨✨',
-        image: [
-          'assets/images/post/3.jpg',
-          'assets/images/post/5.jpg',
-          'assets/images/post/12.jpg',
-          'assets/images/post/13.jpg',
-          'assets/images/post/14.jpg',
-          'assets/images/post/15.jpg',
-          'assets/images/post/16.jpg',
-        ],
-        like: 15000,
-        love: 7300,
-        comment: 258,
-        haha: 235,
-        share: 825,
-        lovelove: 212,
-        wow: 9,
-        layout: 'classic',
-        type: 'memory',
-      ),
-      Post(
-        user: User(
-          name: 'Lê Công Đắt',
-          avatar: 'assets/images/user/lcd.jpg',
-        ),
-        time: '3 phút',
-        shareWith: 'public',
-        content:
-            'Những câu thả thính Tiếng Anh mượt mà - The smoothest pick up lines \n\n1. You wanna know who my crush is? - Cậu muốn biết crush của tớ là ai hơm?\nSimple. Just read the first word :> - Đơn giản. Cứ đọc lại từ đầu tiên\n\n2. Hey, i think my phone is broken - Tớ nghĩ điện thoại tớ bị hỏng rùi \nIt doesn’t have your phone number in it. - Vì nó không có sđt của cậu trong nàyyy \nCan you fix it? 😉 - Cậu sửa được không ha?\n\n3. According to my calculations, the more you smile, the more i fall - Theo tính toán của tớ, cậu càng cười, tớ càng đổ \n\n4. I can’t turn water into wine - Tớ không thể biến nước thành rịu\nBut i can turn you into mine - Nhưng tớ có thể biến cậu thành “của tớ” \n\n5. Can i take a picture of you? - Cho tớ chụp 1 bức hình với cậu được hem\nAh, to tell Santa what i want for Christmas this year - À để nói với ông già Noel tớ muốn quà gì dịp giáng sinh năm nay \n\nÁp dụng cho bạn thân, crush, ngừi iu hay cho zui cũng được lun 🥰',
-        image: [
-          'assets/images/post/3.jpg',
-          'assets/images/post/4.jpg',
-          'assets/images/post/5.jpg'
-        ],
-        like: 15000,
-        love: 7300,
-        comment: 258,
-        haha: 235,
-        share: 825,
-        lovelove: 212,
-        wow: 9,
-        layout: 'column',
-        type: 'memory',
-      ),
     ],
+    city: "hn",
+    country: "hn",
+    link: "",
+    userId: "375",
   );
   User get user => _user;
+
+  void updateUserData({
+    required String name,
+    String? avatar,
+    String? cover_image,
+    String? city,
+    String? country,
+    String? description,
+    String? address,
+    String? link,
+  }) {
+    _user = _user.copyWith(
+      name: name,
+      avatar: avatar,
+      hometown: city,
+      address: address,
+      country: country,
+      cover: cover_image,
+      bio: description,
+      link: link,
+    );
+
+    notifyListeners();
+  }
 }

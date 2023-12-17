@@ -17,8 +17,7 @@ class EmailSignupScreen extends StatelessWidget {
           ), // Sử dụng biểu tượng mũi tên quay lại
           onPressed: () {
             // Xử lý khi nút "Back" được nhấn
-            Navigator.of(context)
-                .pop(); // Đóng màn hình đăng ký và quay lại màn hình trước đó
+            Navigator.of(context).pop(); // Đóng màn hình đăng ký và quay lại màn hình trước đó
           },
         ),
         shape: Border(
@@ -54,8 +53,7 @@ class EmailSignupScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   labelText: 'Địa chỉ email',
                   suffixIconColor: Colors.red,
-                  labelStyle:
-                      TextStyle(color: Colors.black87), // Đặt màu của label
+                  labelStyle: TextStyle(color: Colors.black87), // Đặt màu của label
                 ),
               ),
             ),

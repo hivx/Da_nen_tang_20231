@@ -121,7 +121,7 @@ class _ImageFullScreenState extends State<ImageFullScreen> {
           child: Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(widget.post.image![0]),
+                image: NetworkImage(widget.post.image![0]),
               ),
             ),
             child: contentVisible
