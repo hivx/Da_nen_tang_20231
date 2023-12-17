@@ -8,6 +8,8 @@ import 'package:anti_facebook_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../dangbai.dart';
+
 class NewsFeedScreen extends StatefulWidget {
   static double offset = 0;
   final ScrollController parentScrollController;
@@ -713,6 +715,11 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(20),
                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => DangBai()),
+                      );
                       setState(() {
                         colorNewPost = Colors.transparent;
                       });
@@ -762,39 +769,39 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
           const SizedBox(
             height: 10,
           ),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 5,
-                  ),
-                  child: AddStoryCard(),
-                ),
-                ...stories
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                          ),
-                          child: StoryCard(story: e),
-                        ))
-                    .toList()
-              ]),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            width: double.infinity,
-            height: 5,
-            color: Colors.black26,
-          ),
+          // Container(
+          //   alignment: Alignment.centerLeft,
+          //   padding: const EdgeInsets.symmetric(
+          //     horizontal: 10,
+          //   ),
+          //   child: SingleChildScrollView(
+          //     scrollDirection: Axis.horizontal,
+          //     child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+          //       const Padding(
+          //         padding: EdgeInsets.symmetric(
+          //           horizontal: 5,
+          //         ),
+          //         child: AddStoryCard(),
+          //       ),
+          //       ...stories
+          //           .map((e) => Padding(
+          //                 padding: const EdgeInsets.symmetric(
+          //                   horizontal: 5,
+          //                 ),
+          //                 child: StoryCard(story: e),
+          //               ))
+          //           .toList()
+          //     ]),
+          //   ),
+          // ),
+          // const SizedBox(
+          //   height: 10,
+          // ),
+          // Container(
+          //   width: double.infinity,
+          //   height: 5,
+          //   color: Colors.black26,
+          // ),
           Column(
             children: posts
                 .map((e) => Column(

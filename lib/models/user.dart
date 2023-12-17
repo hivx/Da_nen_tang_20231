@@ -21,6 +21,10 @@ class User {
   final List<Post>? posts;
   final String? pageType;
   final String? address;
+  final String? city;
+  final String? country;
+  final String? link;
+  final String? userId;
   User({
     required this.name,
     required this.avatar,
@@ -41,6 +45,10 @@ class User {
     this.posts,
     this.pageType,
     this.address,
+    this.city,
+    this.country,
+    this.link,
+    this.userId,
   });
 
   User copyWith({
@@ -63,6 +71,10 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
+    String? city,
+    String? country,
+    String? link,
+    String? userId,
   }) {
     return User(
       name: name ?? this.name,
@@ -84,6 +96,10 @@ class User {
       posts: posts ?? this.posts,
       pageType: pageType ?? this.pageType,
       address: address ?? this.address,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      link: link ?? this.link,
+      userId: userId ?? this.userId,
     );
   }
 }
