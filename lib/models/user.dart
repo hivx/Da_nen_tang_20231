@@ -15,18 +15,17 @@ class User {
   late List<User>? topFriends;
   late String? hometown;
   List<SocialMedia>? socialMedias;
-  
-  final String? bio;
-  final String? type;
-  final List<Education>? educations;
-  final bool? guard;
-  final List<Post>? posts;
-  final String? pageType;
-  final String? address;
-  final String? city;
-  final String? country;
-  final String? link;
-  final String? userId;
+  late String? bio;
+  late String? type;
+  late List<Education>? educations;
+  late bool? guard;
+  late List<Post>? posts;
+  late String? pageType;
+  late String? address;
+  late String? city;
+  late String? country;
+  late String? link;
+  late String? userId;
   User({
     this.id,
     required this.name,

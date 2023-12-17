@@ -27,11 +27,11 @@ class _SearchBarAppState extends State<SearchBarApp> {
   Future<void> fetchAndSetSearchPosts() async {
     try {
       final networkRequest = NetworkRequest();
-      final posts = await networkRequest.fetchPosts();
-      setState(() {
-        searchPosts = posts;
-        searchResults = List.from(posts);
-      });
+      // final posts = await networkRequest.fetchPosts();
+      // setState(() {
+      //   searchPosts = posts;
+      //   searchResults = List.from(posts);
+      // });
     } catch (error) {
       // Xử lý lỗi nếu có
       if (kDebugMode) {
