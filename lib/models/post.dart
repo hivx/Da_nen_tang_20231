@@ -133,7 +133,7 @@ class Post {
     share = 825;
     lovelove = 212;
     wow = 9;
-    layout = 'frame';
+    layout = 'classic';
     shareWith = 'public';
     type = '';
     sad = 267;
