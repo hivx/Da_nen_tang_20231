@@ -92,52 +92,7 @@ class _SuaBaiWidgetState extends State<SuaBai> {
     } catch (error) {
       setState(() {});
     }
-    // var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
-    // request.headers['Content-Type'] = 'multipart/form-data';
-    // request.headers['Authorization'] = 'Bearer $authToken';
-    // request.fields['described'] = described;
-    // request.fields['video'] = '';
-    // request.fields['status'] = status;
-    // request.fields['auto_accept'] = '1';
-
-    // List<http.MultipartFile> multipartFiles = [];
-    // for (var imagePath in imagePaths) {
-    //   final file = File(imagePath);
-    //   List<int> fileBytes = await file.readAsBytes();
-    //   // if (fileBytes != null) {
-    //   var fileImage = http.MultipartFile.fromBytes(
-    //     'image', fileBytes,
-    //     filename: imagePath.split('/').last,
-    //     // Lấy tên tệp từ đường dẫn
-    //   );
-    //   // request.files.add(fileImage);
-    //   print(imagePath);
-    //   multipartFiles.add(fileImage);
-    // }
-
-    // request.files.addAll(multipartFiles);
-    // try {
-    //   var response = await request.send();
-    //   if (response.statusCode == 200) {
-    //     // Navigator.pushReplacementNamed(context, '/home');
-    //     print('Images uploaded successfully!');
-    //   } else {
-    //     print('Failed to upload images. Status code: ${response.statusCode}');
-    //   }
-    // } catch (e) {
-    //   // Xử lý ngoại lệ khi gặp lỗi trong quá trình gửi ảnh
-    //   print('Error uploading images: $e');
-    //   // setState(() {});
-    // }
   }
-
-  // Future<void> sendImages() async {
-  //   if (_imagePaths.isNotEmpty) {
-  //     await uploadImagesToServer();
-  //   } else {
-  //     // Xử lý khi không có ảnh được chọn
-  //   }
-  // }
 
   Future<void> selectImages() async {
     final picker = ImagePicker();
