@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +15,7 @@ class DangBai extends StatefulWidget {
 
 class _DangBaiWidgetState extends State<DangBai> {
   get confirm => null;
-  bool isColumnVisible = true;
+  bool isColumnVisible = false;
   bool expanded = false;
   XFile? selectedVideo;
   String described = '';
@@ -43,9 +44,8 @@ class _DangBaiWidgetState extends State<DangBai> {
 
   final String apiUrl = 'https://it4788.catan.io.vn/add_post';
 
-  final String authToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjE0LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI2NjkyOTZ9.VtoDg2W056Yc7Jx9_0KSkqPxdumgPaQztdv0BdZO5-s';
-
+  final String authToken =GlobalVariables.token;
+  
   Future uploadImagesToServer(imagePaths) async {
     print('da vao ham');
     var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
@@ -118,6 +118,37 @@ class _DangBaiWidgetState extends State<DangBai> {
   //     });
   //   }
   // }
+  Future postData() async {
+    var url = Uri.parse(apiUrl);
+    var formData = http.MultipartRequest('POST', url);
+    List<String> images = [];
+    if(_imagePaths.isNotEmpty) {
+      for(String file in _imagePaths) {
+        images.add(file);
+      }
+    }
+    formData.headers['Authorization'] = 'Bearer $authToken';
+    formData.fields.addAll({
+      'described': "described",
+      'status': "status",
+      // 'image': jsonEncode(images),
+    });
+    // if(videoFile != null) {
+      formData.files.add(
+          await http.MultipartFile.fromPath('image', images[0]));
+    // }
+    try {
+      final response = await formData.send();
+      if (response.statusCode == 200) {
+        print('Success: ${await response.stream.bytesToString()}');
+      } else {
+        throw Exception('Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString()}');
+      }
+    } catch (e) {
+      print('Error4: $e');
+      throw Exception('Failed to post data');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +179,7 @@ class _DangBaiWidgetState extends State<DangBai> {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: sendImages,
+                    onPressed: postData,
                     child: const Text(
                       'Đăng',
                       textAlign: TextAlign.center,

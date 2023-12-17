@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../models/user.dart';
+import '../../../utils/httpRequest.dart';
 import '../../news-feed/widgets/post_card.dart';
 import 'edit_user_page.dart';
 
@@ -33,6 +34,14 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   final String getUserInfo = 'https://it4788.catan.io.vn/get_user_info';
   final String authToken = GlobalVariables.token;
 
+  late User newUser = widget.user;
+  late String userName = widget.user.name ?? "";
+  late String avatar = widget.user.avatar ?? "";
+  late String coverImage = widget.user.cover ?? "";
+  late String country = widget.user.country ?? "";
+  late String address = widget.user.address ?? "";
+  late String description = widget.user.bio ?? "";
+  late String coins = widget.user.coins ?? "50";
   Future getInfo() async {
     var data = {
       "user_id": widget.user.userId,
@@ -66,6 +75,16 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
         String coins = responseData['data']['coins'];
         setState(() {
           isFriend = is_friend == "0" ? false : true;
+          userName = username;
+          this.avatar = avatar;
+          this.country = country;
+          this.address = address;
+          this.description = description;
+          this.coins = coins;
+          this.coverImage = coverImage;
+
+          this.newUser = newUser.copyWith(name: userName, avatar: avatar, cover: coverImage,
+              bio: description, address: address, city: city, country: country, link: link, coins: coins, userId: id);
         });
         return responseData;
       } else {
@@ -78,7 +97,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
     }
   }
 
-  late List<Post> listPosts = [];
+  List<Post> listPosts = [];
   Future getPosts() async {
     var data = {
       "user_id": widget.user.userId,
@@ -156,6 +175,23 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
     } catch (e) {
       print('Error: $e');
       throw Exception('Failed to get post');
+    }
+  }
+  Future<void> _callAPI() async {
+    try {
+      Map<String, dynamic> requestData = {
+        "user_id": widget.user.userId,
+        "index": "0",
+        "count": "10"
+      };
+
+      var result = await callAPI('/get_list_posts',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      listPosts = postsFromJson(result['post']);
+      setState(() {});
+      // }
+    } catch (error) {
+      // setState(() {});
     }
   }
 
@@ -299,7 +335,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   @override
   void initState() {
     super.initState();
-    getPosts();
+    // getPosts();
+    _callAPI();
     getInfo();
   }
 
@@ -334,7 +371,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
       Navigator.pushNamed(
         context,
         EditUserPage.routeName,
-        arguments: user,
+        arguments: newUser,
       );
     }
 
@@ -427,9 +464,9 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   width: double.infinity,
                   height: 270,
                 ),
-                user.cover != null
-                    ? Image.asset(
-                        user.cover!,
+                coverImage != ""
+                    ? Image.network(
+                        coverImage,
                         fit: BoxFit.cover,
                         height: 220,
                         width: double.infinity,
@@ -454,7 +491,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                           ),
                         ),
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(user.avatar),
+                          backgroundImage: NetworkImage(avatar),
                           radius: 75,
                         ),
                       ),
@@ -531,7 +568,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   Row(
                     children: [
                       Text(
-                        user.name,
+                        userName,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 23,
@@ -548,6 +585,19 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               ),
                             )
                           : const SizedBox()),
+                      Text(
+                        " - $coins",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.currency_bitcoin_sharp,
+                        color: Color.fromARGB(255, 99, 99, 7),
+                        size: 20.0,
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -672,7 +722,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   ),
                   if (user.bio != null)
                     Text(
-                      user.bio!,
+                      description,
                       style: const TextStyle(
                         fontSize: 16,
                       ),
@@ -1440,7 +1490,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: user.address,
+                                    text: address,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -1486,7 +1536,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: user.hometown,
+                                    text: country,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -2002,7 +2052,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                           right: 10,
                         ),
                         child: CircleAvatar(
-                          backgroundImage: AssetImage(user.avatar),
+                          backgroundImage: NetworkImage(avatar),
                           radius: 20,
                         ),
                       ),
@@ -2229,21 +2279,25 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                 height: 10,
                 color: Colors.grey,
               ),
-            if (listPosts.isNotEmpty)
-              for (int i = 0; i < listPosts!.length; i++)
-                Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    PostCard(
-                      post: listPosts![i],
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 5,
-                      color: Colors.grey,
-                    ),
-                  ],
-                )
+            Column(
+              children: listPosts
+                  .map((post) => Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  PostCard(
+                    post: post,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 5,
+                    color: Colors.black26,
+                  ),
+                ],
+              ))
+                  .toList(),
+            ),
           ],
         ),
       ),
