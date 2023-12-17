@@ -4,8 +4,10 @@ import 'package:anti_facebook_app/features/menu/widgets/menu_choice.dart';
 import 'package:anti_facebook_app/features/menu/widgets/shortcut.dart';
 import 'package:anti_facebook_app/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../login.dart';
+import '../../../providers/user_provider.dart';
 import '../../block/screens/block_screen.dart';
 import '../../memory/screens/memory_screen.dart';
 import '../../personal-page/screens/personal_page_screen.dart';
@@ -25,7 +27,7 @@ class _MenuScreenState extends State<MenuScreen> {
   ScrollController scrollController =
       ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
-  User user = User(name: 'Lê Công Đắt', avatar: 'assets/images/user/lcd.jpg', userId: "375");
+
   User secondUser =
       User(name: 'Leo Messi', avatar: 'assets/images/user/messi.jpg');
   final List<Widget> shortcuts = [
@@ -303,6 +305,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<UserProvider>(context).user;
     scrollController.addListener(() {
       headerScrollController.jumpTo(headerScrollController.offset +
           scrollController.offset -

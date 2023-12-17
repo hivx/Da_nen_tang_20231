@@ -250,7 +250,6 @@ class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
                 ),
               ),
             ),
-            if(friends.isNotEmpty)
             for (int i = 0; i < friends.length; i++)
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -358,47 +357,47 @@ class _FriendWidgetState extends State<FriendWidget> {
                     ),
                     child: Row(
                       children: [
-                        Stack(
-                          children: [
-                            widget.friend.f2 != null
-                                ? const SizedBox(
-                              width: 46,
-                              height: 28,
-                            )
-                                : const SizedBox(
-                              width: 28,
-                              height: 28,
-                            ),
-                            if (widget.friend.f2 != null)
-                              Positioned(
-                                left: 22,
-                                top: 2,
-                                child: CircleAvatar(
-                                  backgroundImage:
-                                  NetworkImage(widget.friend.f2!.avatar),
-                                  radius: 12,
-                                ),
-                              ),
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: CircleAvatar(
-                                  backgroundImage:
-                                  NetworkImage(widget.friend.f1!.avatar),
-                                  radius: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Stack(
+                        //   children: [
+                        //     widget.friend.f2 != null
+                        //         ? const SizedBox(
+                        //       width: 46,
+                        //       height: 28,
+                        //     )
+                        //         : const SizedBox(
+                        //       width: 28,
+                        //       height: 28,
+                        //     ),
+                        //     if (widget.friend.f2 != null)
+                        //       Positioned(
+                        //         left: 22,
+                        //         top: 2,
+                        //         child: CircleAvatar(
+                        //           backgroundImage:
+                        //           NetworkImage(widget.friend.f2!.avatar),
+                        //           radius: 12,
+                        //         ),
+                        //       ),
+                        //     Positioned(
+                        //       left: 0,
+                        //       top: 0,
+                        //       child: Container(
+                        //         decoration: BoxDecoration(
+                        //           shape: BoxShape.circle,
+                        //           border: Border.all(
+                        //             color: Colors.white,
+                        //             width: 2,
+                        //           ),
+                        //         ),
+                        //         child: CircleAvatar(
+                        //           backgroundImage:
+                        //           NetworkImage(widget.friend.f1!.avatar),
+                        //           radius: 12,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                         const SizedBox(
                           width: 5,
                         ),

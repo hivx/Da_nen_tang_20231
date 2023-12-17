@@ -14,32 +14,10 @@ import '../../../providers/user_provider.dart';
 class EditUserPage extends StatefulWidget {
   static const String routeName = '/edit-user-page';
   final User user;
-  // final String userName;
-  // final String avatarImagePath;
-  // final String coverImagePath;
-  // final String description;
-  // final String work;
-  // final String home;
-  // final String place;
-  // final int follower;
-  // final String school;
-  // final String relationship;
-  // final String link;
 
   const EditUserPage({
     Key? key,
     required this.user,
-    // required this.userName,
-    // required this.avatarImagePath,
-    // required this.coverImagePath,
-    // required this.description,
-    // required this.work,
-    // required this.home,
-    // required this.place,
-    // required this.follower,
-    // required this.school,
-    // required this.relationship,
-    // required this.link,
   }) : super(key: key);
 
   @override
@@ -59,17 +37,6 @@ class _EditUserPageState extends State<EditUserPage> {
       body: SingleChildScrollView(
         child: ProfileContent(
           user: widget.user!,
-          // userName: widget.user.name,
-          // avatarImagePath: widget.user.avatar,
-          // coverImagePath: widget.user.cover,
-          // description: widget.description,
-          // work: widget.work,
-          // home: widget.home,
-          // place: widget.place,
-          // follower: widget.follower,
-          // school: widget.school,
-          // relationship: widget.relationship,
-          // link: widget.link,
         ),
       ),
     );
@@ -78,32 +45,10 @@ class _EditUserPageState extends State<EditUserPage> {
 
 class ProfileContent extends StatefulWidget {
   final User user;
-  // final String userName;
-  // final String avatarImagePath;
-  // final String coverImagePath;
-  // final String description;
-  // final String work;
-  // final String home;
-  // final String place;
-  // final int follower;
-  // final String school;
-  // final String relationship;
-  // final String link;
 
   const ProfileContent({
     Key? key,
     required this.user,
-    // required this.userName,
-    // required this.avatarImagePath,
-    // required this.coverImagePath,
-    // required this.description,
-    // required this.work,
-    // required this.home,
-    // required this.place,
-    // required this.follower,
-    // required this.school,
-    // required this.relationship,
-    // required this.link,
   }) : super(key: key);
 
   @override
@@ -195,39 +140,55 @@ class _ProfileContentState extends State<ProfileContent> {
     if (linkUser!.isNotEmpty) {
       formData.fields['link'] = linkUser!;
     }
-    if (avatarImagePath!.isNotEmpty) {
-      formData.files
-          .add(await http.MultipartFile.fromPath('avatar', avatarImagePath!));
+
+    if (avatarImagePath != null && avatarImagePath!.isNotEmpty) {
+      File avatarFile = File(avatarImagePath!);
+      if (avatarFile.existsSync()) {
+        List<int> avatarBytes = await avatarFile.readAsBytes();
+        formData.files.add(
+          http.MultipartFile.fromBytes('avatar', avatarBytes, filename: 'avatar.jpg'),
+        );
+      } else {
+        print('Avatar file not found');
+      }
     }
 
-    if (coverImagePath!.isNotEmpty) {
-      formData.files.add(
-          await http.MultipartFile.fromPath("cover_image", coverImagePath!));
+// Chuyển từ MultipartFile.fromPath sang MultipartFile.fromBytes cho cover image
+    if (coverImagePath != null && coverImagePath!.isNotEmpty) {
+      File coverFile = File(coverImagePath!);
+      if (coverFile.existsSync()) {
+        List<int> coverBytes = await coverFile.readAsBytes();
+        formData.files.add(
+          http.MultipartFile.fromBytes('cover_image', coverBytes, filename: 'cover_image.jpg'),
+        );
+      } else {
+        print('Cover image file not found');
+      }
     }
     try {
-      formData.send().then((response) {
-        response.stream.bytesToString().then((value) {
-          print(json.decode(value)['message']);
-          if(json.decode(value)['message'] == "OK") {
-            UserProvider userProvider = UserProvider();
-            userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
-          }
-          Navigator.pushReplacementNamed(
-            context,
-            PersonalPageScreen.routeName,
-            arguments: Provider.of<UserProvider>(context, listen: false).user,
-          );
-        });
-      });
-      // final response = await formData.send();
-      // if (response.statusCode == 201) {
-      //   print("suddceess");
-      //   UserProvider userProvider = UserProvider();
-      //   userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
-      // } else {
-      //   throw Exception(
-      //       'Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString()}');
-      // }
+      // formData.send().then((response) {
+      //   response.stream.bytesToString().then((value) {
+      //     print(json.decode(value)['message']);
+      //     if(json.decode(value)['message'] == "OK") {
+      //       UserProvider userProvider = UserProvider();
+      //       userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
+      //     }
+      //     // Navigator.pushNamed(
+      //     //   context,
+      //     //   PersonalPageScreen.routeName,
+      //     //   arguments: Provider.of<UserProvider>(context, listen: false).user,
+      //     // );
+      //   });
+      // });
+      final response = await formData.send();
+      if (response.statusCode == 201) {
+        print("success");
+        // UserProvider userProvider = UserProvider();
+        // userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
+      } else {
+        throw Exception(
+            'Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString().toString()}');
+      }
 
 
     } catch (e) {
@@ -235,7 +196,42 @@ class _ProfileContentState extends State<ProfileContent> {
       throw Exception('Failed to post data');
     }
   }
-
+  // Future setUserData() async {
+  //   var url = Uri.parse(setUserInfo);
+  //   var request = http.MultipartRequest('POST', url);
+  //
+  //   request.headers['Authorization'] = 'Bearer $authToken';
+  //
+  //   request.fields['username'] = userName;
+  //   request.fields['description'] = description ?? '';
+  //   request.fields['country'] = country ?? '';
+  //   request.fields['city'] = city ?? '';
+  //   request.fields['address'] = address ?? '';
+  //   request.fields['link'] = linkUser ?? '';
+  //
+  //   if (avatarImagePath != null && avatarImagePath!.isNotEmpty) {
+  //     var avatarFile = await http.MultipartFile.fromPath('avatar', avatarImagePath!);
+  //     request.files.add(avatarFile);
+  //   }
+  //
+  //   if (coverImagePath != null && coverImagePath!.isNotEmpty) {
+  //     var coverFile = await http.MultipartFile.fromPath('cover_image', coverImagePath!);
+  //     request.files.add(coverFile);
+  //   }
+  //
+  //   try {
+  //     var response = await request.send();
+  //
+  //     if (response.statusCode == 201) {
+  //       print("Success");
+  //     } else {
+  //       throw Exception('Failed to post data. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Error: $e');
+  //     throw Exception('Failed to post data');
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -479,8 +475,8 @@ class _ProfileContentState extends State<ProfileContent> {
                   onPressed: () {
                     if (isEditDetail) {
                       setState(() {
-                        city = addressController.text;
-                        hometown = cityController.text;
+                        city = cityController.text;
+                        address = addressController.text;
                         country = countryController.text;
                       });
                     }
@@ -532,7 +528,7 @@ class _ProfileContentState extends State<ProfileContent> {
                         ),
                         SizedBox(width: 10),
                         Text(
-                          'Sống tại ' + hometown!,
+                          'Sống tại ' + address!,
                           style: TextStyle(fontSize: 18.0),
                         ),
                       ],
@@ -614,13 +610,13 @@ class _ProfileContentState extends State<ProfileContent> {
               : Column(
                   children: [
                     TextField(
-                      controller: addressController,
-                      decoration: InputDecoration(labelText: 'Address'),
+                      controller: cityController,
+                      decoration: InputDecoration(labelText: 'City'),
                     ),
                     SizedBox(height: 16.0),
                     TextField(
-                      controller: cityController,
-                      decoration: InputDecoration(labelText: 'City'),
+                      controller: addressController,
+                      decoration: InputDecoration(labelText: 'Address'),
                     ),
                     SizedBox(height: 16.0),
                     TextField(
