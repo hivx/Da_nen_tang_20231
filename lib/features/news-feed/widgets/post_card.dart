@@ -3,17 +3,20 @@ import 'dart:math';
 
 import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:anti_facebook_app/features/comment/screens/comment_screen.dart';
+import 'package:anti_facebook_app/features/home/screens/home_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/image_fullscreen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/multiple_images_post_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/widgets/post_content.dart';
 import 'package:anti_facebook_app/models/post.dart';
+import 'package:anti_facebook_app/utils/httpRequest.dart';
+import 'package:anti_facebook_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
 
 import '../../personal-page/screens/personal_page_screen.dart';
 
 class PostCard extends StatefulWidget {
   final Post post;
-  const PostCard({super.key, required this.post});
+  const PostCard({Key? key, required this.post}) : super(key: key);
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -21,12 +24,16 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   bool postVisible = true;
+  bool isLike = false;
   List<String> icons = [];
   String reactions = '0';
   double leftImageHeight = 0;
+  String details = '';
+  String subject = '';
   @override
   void initState() {
     super.initState();
+    getPost(widget.post.id);
     List<int> list = [
       widget.post.like != null ? widget.post.like! : 0,
       widget.post.haha != null ? widget.post.haha! : 0,
@@ -89,7 +96,7 @@ class _PostCardState extends State<PostCard> {
 
   _calculateImageDimension() async {
     Completer<Size> completer = Completer();
-    Image image = Image.asset(widget.post.image![0]);
+    Image image = Image.network(widget.post.image![0]);
     image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
@@ -119,9 +126,112 @@ class _PostCardState extends State<PostCard> {
     });
   }
 
+  Future<void> deletePost(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "id": id,
+      };
+
+      var result = await callAPI('/delete_post',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      await Future.delayed(const Duration(seconds: 1));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+      setState(() {});
+      // }
+    } catch (error) {
+      setState(() {});
+    }
+  }
+
+  Future<void> blockUser(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "user_id": id,
+      };
+
+      var result = await callAPI('/set_block',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      await Future.delayed(const Duration(seconds: 1));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+      // }
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  Future<void> likePost(id) async {
+    try {
+      Map<String, dynamic> requestData = {"id": id, "type": "0"};
+
+      var result = await callAPI('/feel',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  Future<void> deleteLikePost(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "id": id,
+      };
+
+      var result = await callAPI('/delete_feel',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+
+      // }
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  Future<void> getPost(id) async {
+    try {
+      Map<String, dynamic> requestData = {"id": id};
+
+      var result = await callAPI('/get_post', requestData);
+    } catch (error) {
+      setState(() {});
+    }
+  }
+
+  void changeSubject(String newSubject) {
+    setState(() {
+      subject = newSubject; // Thay đổi giá trị của subject khi text được click
+    });
+  }
+
+  Future<void> reportPost(id) async {
+    try {
+      Map<String, dynamic> requestData = {
+        "id": id,
+        "subject": subject,
+        "details": details,
+      };
+
+      var result = await callAPI('/report_post',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      await Future.delayed(const Duration(seconds: 1));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+      setState(() {});
+      // }
+    } catch (error) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return postVisible
+    return (postVisible)
         ? Column(
             children: [
               Padding(
@@ -142,7 +252,7 @@ class _PostCardState extends State<PostCard> {
                           child: CircleAvatar(
                             radius: 20,
                             backgroundImage:
-                                AssetImage(widget.post.user.avatar),
+                                NetworkImage(widget.post.user.avatar),
                           ),
                         ),
                         Padding(
@@ -188,7 +298,7 @@ class _PostCardState extends State<PostCard> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    widget.post.time,
+                                    formatDate(widget.post.time),
                                     style: const TextStyle(
                                         color: Colors.black54, fontSize: 14),
                                   ),
@@ -460,7 +570,9 @@ class _PostCardState extends State<PostCard> {
                                             Material(
                                               color: Colors.transparent,
                                               child: InkWell(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  deletePost(widget.post.id);
+                                                },
                                                 child: ListTile(
                                                   titleAlignment:
                                                       ListTileTitleAlignment
@@ -518,7 +630,668 @@ class _PostCardState extends State<PostCard> {
                                             Material(
                                               color: Colors.transparent,
                                               child: InkWell(
-                                                onTap: () {},
+                                                onTap: () {
+                                                  showModalBottomSheet(
+                                                    isScrollControlled: true,
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return Container(
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.9,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(10),
+                                                          child: Column(
+                                                            children: [
+                                                              Container(
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        top:
+                                                                            10.0,
+                                                                        bottom:
+                                                                            10.0),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  border:
+                                                                      Border(
+                                                                    bottom:
+                                                                        BorderSide(
+                                                                      color: Colors
+                                                                          .grey, // Màu sắc của đường viền dưới
+                                                                      width:
+                                                                          1.0, // Độ dày của đường viền dưới
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                child:
+                                                                    const Row(
+                                                                  children: [
+                                                                    Text(
+                                                                      'Báo cáo bài viết',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .black,
+                                                                        fontSize:
+                                                                            22,
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              const Row(
+                                                                children: [
+                                                                  Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            top:
+                                                                                10.0,
+                                                                            bottom:
+                                                                                10.0), // Padding top và bottom là 10
+                                                                        child:
+                                                                            Text(
+                                                                          'Vui lòng chọn vấn đề để tiếp tục',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            fontSize:
+                                                                                19,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      Padding(
+                                                                        padding:
+                                                                            EdgeInsets.only(bottom: 15),
+                                                                        child:
+                                                                            Text(
+                                                                          'Bạn có thể báo cáo bài viết sau khi chọn vấn đề',
+                                                                          style:
+                                                                              TextStyle(fontSize: 17),
+                                                                        ),
+                                                                      )
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Ảnh khỏa thân');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Ảnh khỏa thân',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Bạo lực');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Bạo lực',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Quấy rối');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Quấy rối',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Tự tử/ Tự gây thương tích');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Tự tử/ Tự gây thương tích',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Tin giả');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Tin giả',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Spam');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Spam',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Bán hàng trái phép');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Bán hàng trái phép',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            10),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Ngôn ngữ gây thù ghét');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Ngôn ngữ gây thù ghét',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            30),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Khủng bố');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Khủng bố',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        right:
+                                                                            10,
+                                                                        bottom:
+                                                                            30),
+                                                                    child:
+                                                                        InkWell(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20),
+                                                                      onTap:
+                                                                          () {
+                                                                        changeSubject(
+                                                                            'Vấn đề khác');
+                                                                      },
+                                                                      child:
+                                                                          Container(
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(
+                                                                          horizontal:
+                                                                              10,
+                                                                          vertical:
+                                                                              8,
+                                                                        ),
+                                                                        decoration: (true)
+                                                                            ? BoxDecoration(
+                                                                                color: Colors.blue.withOpacity(0.1),
+                                                                                shape: BoxShape.rectangle,
+                                                                                borderRadius: BorderRadius.circular(20),
+                                                                              )
+                                                                            : const BoxDecoration(),
+                                                                        child:
+                                                                            Text(
+                                                                          'Vấn đề khác',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                15,
+                                                                            color: true
+                                                                                ? Colors.blue[800]
+                                                                                : Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                      child:
+                                                                          (TextField(
+                                                                    maxLines: 4,
+                                                                    decoration:
+                                                                        InputDecoration(
+                                                                      border:
+                                                                          OutlineInputBorder(),
+                                                                      hintText:
+                                                                          'Enter a search term',
+                                                                    ),
+                                                                    onChanged:
+                                                                        (value) {
+                                                                      setState(
+                                                                          () {
+                                                                        details =
+                                                                            value;
+                                                                      });
+                                                                    },
+                                                                  ))),
+                                                                ],
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                        ElevatedButton(
+                                                                      style: ElevatedButton
+                                                                          .styleFrom(
+                                                                        backgroundColor:
+                                                                            Color(0xFF1878F3),
+                                                                        shadowColor:
+                                                                            Color(0xFF1878F3),
+                                                                        side:
+                                                                            const BorderSide(
+                                                                          color:
+                                                                              Colors.black12,
+                                                                          width:
+                                                                              0.5,
+                                                                        ),
+                                                                      ),
+                                                                      onPressed:
+                                                                          () {
+                                                                        reportPost(widget
+                                                                            .post
+                                                                            .id);
+                                                                      },
+                                                                      child:
+                                                                          const Text(
+                                                                        'Xác nhận',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              17,
+                                                                          color:
+                                                                              Colors.white,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
                                                 child: ListTile(
                                                   tileColor: Colors.white,
                                                   minLeadingWidth: 10,
@@ -749,7 +1522,10 @@ class _PostCardState extends State<PostCard> {
                                                   bottomRight:
                                                       Radius.circular(10),
                                                 ),
-                                                onTap: () {},
+                                                onTap: () {
+                                                  blockUser(
+                                                      widget.post.user.id);
+                                                },
                                                 child: ListTile(
                                                   shape:
                                                       const RoundedRectangleBorder(
@@ -768,7 +1544,7 @@ class _PostCardState extends State<PostCard> {
                                                           .center,
                                                   leading: const ImageIcon(
                                                     AssetImage(
-                                                        'assets/images/unfollow.png'),
+                                                        'assets/images/block.png'),
                                                     size: 30,
                                                     color: Colors.black,
                                                   ),
@@ -778,7 +1554,7 @@ class _PostCardState extends State<PostCard> {
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        'Bỏ theo dõi ${widget.post.user.name}',
+                                                        'Chặn ${widget.post.user.name}',
                                                         style: const TextStyle(
                                                           color: Colors.black,
                                                           fontWeight:
@@ -790,7 +1566,7 @@ class _PostCardState extends State<PostCard> {
                                                         height: 5,
                                                       ),
                                                       const Text(
-                                                        'Không xem bài viết của Trang này nữa.',
+                                                        'Không xem bài viết của Người này nữa.',
                                                         style: TextStyle(
                                                           color: Colors.black54,
                                                           fontSize: 14,
@@ -883,7 +1659,7 @@ class _PostCardState extends State<PostCard> {
                         Navigator.pushNamed(context, ImageFullScreen.routeName,
                             arguments: widget.post);
                       },
-                      child: Image.asset((widget.post.image != null)
+                      child: Image.network((widget.post.image != null)
                           ? widget.post.image![0]
                           : widget.post.video![0]),
                     )
@@ -903,7 +1679,7 @@ class _PostCardState extends State<PostCard> {
                                       arguments: widget.post,
                                     );
                                   },
-                                  child: Image.asset(
+                                  child: Image.network(
                                     widget.post.image![0],
                                     width: (widget.post.image!.length > 2 &&
                                             widget.post.image!.length < 5)
@@ -937,7 +1713,7 @@ class _PostCardState extends State<PostCard> {
                                           arguments: widget.post,
                                         );
                                       },
-                                      child: Image.asset(
+                                      child: Image.network(
                                         widget.post.image![1],
                                         width:
                                             MediaQuery.of(context).size.width /
@@ -1013,7 +1789,7 @@ class _PostCardState extends State<PostCard> {
                                             },
                                             child: Stack(
                                               children: [
-                                                Image.asset(
+                                                Image.network(
                                                   widget.post.image![i],
                                                   width: widget.post.image!
                                                                   .length >
@@ -1171,7 +1947,7 @@ class _PostCardState extends State<PostCard> {
                                           },
                                           child: Stack(
                                             children: [
-                                              Image.asset(
+                                              Image.network(
                                                 widget.post.image![i],
                                                 width: (MediaQuery.of(context)
                                                             .size
@@ -1236,7 +2012,7 @@ class _PostCardState extends State<PostCard> {
                                             arguments: widget.post,
                                           );
                                         },
-                                        child: Image.asset(
+                                        child: Image.network(
                                           widget.post.image![0],
                                           width: double.infinity,
                                           height: min(200, leftImageHeight),
@@ -1306,7 +2082,7 @@ class _PostCardState extends State<PostCard> {
                                                 },
                                                 child: Stack(
                                                   children: [
-                                                    Image.asset(
+                                                    Image.network(
                                                       widget.post.image![i],
                                                       width: (MediaQuery.of(
                                                                       context)
@@ -1394,7 +2170,7 @@ class _PostCardState extends State<PostCard> {
                                                   arguments: widget.post,
                                                 );
                                               },
-                                              child: Image.asset(
+                                              child: Image.network(
                                                 widget.post.image![0],
                                                 width: (MediaQuery.of(context)
                                                             .size
@@ -1428,7 +2204,7 @@ class _PostCardState extends State<PostCard> {
                                                       arguments: widget.post,
                                                     );
                                                   },
-                                                  child: Image.asset(
+                                                  child: Image.network(
                                                     widget.post.image![1],
                                                     width:
                                                         (MediaQuery.of(context)
@@ -1509,7 +2285,7 @@ class _PostCardState extends State<PostCard> {
                                                         },
                                                         child: Stack(
                                                           children: [
-                                                            Image.asset(
+                                                            Image.network(
                                                               widget.post
                                                                   .image![i],
                                                               width: (MediaQuery.of(
@@ -1644,7 +2420,8 @@ class _PostCardState extends State<PostCard> {
                               ),
                             ),
                             Text(
-                              reactions,
+                              // reactions,
+                              widget.post.feel.toString(),
                               style: const TextStyle(
                                 color: Colors.black54,
                                 fontSize: 14,
@@ -1705,34 +2482,68 @@ class _PostCardState extends State<PostCard> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 11.5,
-                        ),
-                        alignment: Alignment.center,
-                        width: (MediaQuery.of(context).size.width) / 3,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageIcon(
-                              AssetImage('assets/images/like.png'),
-                              size: 24,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: 10),
-                              child: Text(
-                                'Thích',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                ),
+                    (widget.post.isFelt == -1)
+                        ? (InkWell(
+                            onTap: () {
+                              likePost(widget.post.id);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 11.5,
+                              ),
+                              alignment: Alignment.center,
+                              width: (MediaQuery.of(context).size.width) / 3,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.thumb_up_outlined,
+                                    size: 24.0,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      'Thích',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ))
+                        : (InkWell(
+                            onTap: () {
+                              deleteLikePost(widget.post.id);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 11.5,
+                              ),
+                              alignment: Alignment.center,
+                              width: (MediaQuery.of(context).size.width) / 3,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.thumb_up,
+                                    color: Color(0xFF1878F3),
+                                    size: 24.0,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      'Thích',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Color(0xFF1878F3)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )),
                     InkWell(
                       onTap: () {},
                       child: Container(
@@ -1879,7 +2690,7 @@ class _PostCardState extends State<PostCard> {
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundImage: AssetImage(
+                        backgroundImage: NetworkImage(
                           widget.post.user.avatar,
                         ),
                         radius: 15,

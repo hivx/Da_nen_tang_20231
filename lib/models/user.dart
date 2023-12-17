@@ -2,18 +2,20 @@ import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/models/story.dart';
 
 class User {
-  final String name;
-  final String avatar;
-  bool? verified;
-  final String? cover;
-  final int? friends;
-  final int? likes;
-  final int? followers;
-  final List<String>? hobbies;
-  final List<Story>? stories;
-  final List<User>? topFriends;
-  final String? hometown;
+  late int? id;
+  late String name;
+  late String avatar;
+  late bool? verified;
+  late String? cover;
+  late int? friends;
+  late int? likes;
+  late int? followers;
+  late List<String>? hobbies;
+  late List<Story>? stories;
+  late List<User>? topFriends;
+  late String? hometown;
   List<SocialMedia>? socialMedias;
+  
   final String? bio;
   final String? type;
   final List<Education>? educations;
@@ -26,6 +28,7 @@ class User {
   final String? link;
   final String? userId;
   User({
+    this.id,
     required this.name,
     required this.avatar,
     this.verified,
@@ -52,6 +55,7 @@ class User {
   });
 
   User copyWith({
+    int? id,
     String? name,
     String? avatar,
     bool? verified,
@@ -77,6 +81,7 @@ class User {
     String? userId,
   }) {
     return User(
+      id: id ?? this.id,
       name: name ?? this.name,
       avatar: avatar ?? this.avatar,
       verified: verified ?? this.verified,
@@ -101,6 +106,15 @@ class User {
       link: link ?? this.link,
       userId: userId ?? this.userId,
     );
+  }
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = int.parse(json['id'].toString());
+    print(id);
+    name = json['name'];
+    avatar = json['avatar'];
+    verified = true;
+    address = 'XM';
   }
 }
 
