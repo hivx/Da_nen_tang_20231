@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:anti_facebook_app/features/comment/widgets/reply_form.dart';
 import 'package:anti_facebook_app/models/comment.dart';
 import 'package:anti_facebook_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,12 @@ import 'package:flutter/material.dart';
 class SingleComment extends StatefulWidget {
   final Comment comment;
   final int level;
-  const SingleComment({Key? key, required this.level, required this.comment})
+  final int idPost;
+  const SingleComment(
+      {Key? key,
+      required this.level,
+      required this.comment,
+      required this.idPost})
       : super(key: key);
 
   @override
@@ -31,6 +37,7 @@ class _SingleCommentState extends State<SingleComment> {
   @override
   void initState() {
     super.initState();
+    viewReplies = false;
     setState(() {
       icons = [
         'assets/images/reactions/like.png',
@@ -79,11 +86,7 @@ class _SingleCommentState extends State<SingleComment> {
               (widget.comment.content.isNotEmpty)
                   ? Container(
                       width: min(
-                          MediaQuery.of(context).size.width -
-                              15 * 2 -
-                              20 * 2 -
-                              5 -
-                              35 * widget.level,
+                          MediaQuery.of(context).size.width - 35 * widget.level,
                           max(
                             _textSize(
                                   widget.comment.user.name,
@@ -93,15 +96,14 @@ class _SingleCommentState extends State<SingleComment> {
                                     overflow: TextOverflow.visible,
                                   ),
                                 ).width +
-                                50,
-                            _textSize(
-                                  widget.comment.content,
-                                  const TextStyle(
-                                    fontSize: 16,
-                                    overflow: TextOverflow.visible,
-                                  ),
-                                ).width +
                                 20,
+                            _textSize(
+                              widget.comment.content,
+                              const TextStyle(
+                                fontSize: 16,
+                                overflow: TextOverflow.visible,
+                              ),
+                            ).width,
                           )),
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -226,14 +228,31 @@ class _SingleCommentState extends State<SingleComment> {
               const SizedBox(
                 width: 10,
               ),
-              const Text(
-                'Phản hồi',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              (widget.comment.id != -1)
+                  ? GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context)
+                            .unfocus(); // Đóng bàn phím nếu đang mở
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (BuildContext context) {
+                            return ReplyFormWidget(
+                                idPost: widget.comment.id!,
+                                idComment: widget.comment.id!);
+                          },
+                        );
+                      },
+                      child: const Text(
+                        'Phản hồi',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )
+                  : (Text('')),
               const SizedBox(
                 width: 10,
               ),
@@ -327,11 +346,12 @@ class _SingleCommentState extends State<SingleComment> {
                 ),
               ),
             ),
-          if (viewReplies)
+          if (widget.comment.replies!.isNotEmpty && viewReplies)
             for (int i = 0; i < widget.comment.replies!.length; i++)
               SingleComment(
                 comment: widget.comment.replies![i],
                 level: widget.level + 1,
+                idPost: widget.idPost,
               ),
         ],
       ),

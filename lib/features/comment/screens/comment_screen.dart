@@ -261,7 +261,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                         ),
                                       ),
                                       Text(
-                                        reactions,
+                                        widget.post.feel.toString(),
                                         style: const TextStyle(
                                           color: Colors.black,
                                           fontSize: 16,
@@ -613,140 +613,62 @@ class _CommentScreenState extends State<CommentScreen> {
                                         ),
                                       ),
                                     ),
-                                    for (int i = 0; i < comments.length; i++)
-                                      SingleComment(
-                                        comment: comments[i],
-                                        level: 0,
-                                      ),
                                     //phan input binh luan
                                     Column(
                                       children: [
-                                        Row(
-                                          children: [
-                                            DecoratedBox(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.black12,
-                                                  width: 0.5,
-                                                ),
-                                              ),
-                                              child: CircleAvatar(
-                                                radius: 20,
-                                                backgroundImage: NetworkImage(
-                                                    widget.post.user.avatar),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 2),
-                                                    child: Row(
-                                                      children: [
-                                                        InkWell(
-                                                          onTap: () {
-                                                            Navigator.pushNamed(
-                                                              context,
-                                                              PersonalPageScreen
-                                                                  .routeName,
-                                                              arguments: widget
-                                                                  .post.user,
-                                                            );
-                                                          },
-                                                          child: Text(
-                                                            widget
-                                                                .post.user.name,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  left: 5),
-                                                          child: Icon(
-                                                            Icons.verified,
-                                                            color: Colors.blue,
-                                                            size: 15,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        (widget.post.time),
-                                                        style: const TextStyle(
-                                                            color:
-                                                                Colors.black54,
-                                                            fontSize: 14),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                      const Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                top: 2),
-                                                        child: Icon(
-                                                          Icons.circle,
-                                                          size: 2,
-                                                          color: Colors.black54,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 5,
-                                                      ),
-                                                      const Icon(
-                                                        Icons.public,
-                                                        color: Colors.black54,
-                                                        size: 14,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
                                         Container(
                                           padding: EdgeInsets.all(8.0),
                                           child: Row(
                                             children: [
-                                              Expanded(
-                                                child: TextField(
-                                                  focusNode: _commentFocus,
-                                                  decoration: InputDecoration(
-                                                    hintText:
-                                                        'Viết bình luận...',
+                                              DecoratedBox(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  border: Border.all(
+                                                    color: Colors.black12,
+                                                    width: 0.5,
                                                   ),
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      content = value;
-                                                    });
-                                                  },
+                                                ),
+                                                child: CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundImage: NetworkImage(
+                                                      widget.post.user.avatar),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      EdgeInsets.only(left: 10),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8), // Đặt bo tròn cho TextField
+                                                    color: Colors.grey[
+                                                        300], // Màu nền xám đậm
+                                                  ),
+                                                  child: TextField(
+                                                    focusNode: _commentFocus,
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border: InputBorder
+                                                          .none, // Ẩn border mặc định của TextField
+                                                      hintText:
+                                                          'Viết bình luận...',
+                                                      contentPadding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal:
+                                                                  15), // Padding cho nội dung
+                                                    ),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        content = value;
+                                                      });
+                                                    },
+                                                  ),
                                                 ),
                                               ),
                                               IconButton(
                                                 icon: Icon(Icons.send),
+                                                color: Colors.blue[700],
                                                 onPressed: () {
                                                   setMarkComment(
                                                       widget.post.id);
@@ -757,7 +679,13 @@ class _CommentScreenState extends State<CommentScreen> {
                                           ),
                                         ),
                                       ],
-                                    )
+                                    ),
+                                    for (int i = 0; i < comments.length; i++)
+                                      SingleComment(
+                                        comment: comments[i],
+                                        level: 0,
+                                        idPost: widget.post.id!,
+                                      ),
                                   ],
                                 ),
                               ),

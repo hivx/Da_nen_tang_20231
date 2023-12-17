@@ -58,7 +58,6 @@ class _PostCardState extends State<PostCard> {
       sum += list[i];
     }
     setState(() {
-      reactions = '';
       String tmp = sum.toString();
       int x = 0;
       for (int i = tmp.length - 1; i > 0; i--) {

@@ -78,14 +78,6 @@ class Post {
     int? wow,
     String? layout,
     String? type,
-    String? name,
-    int? feel,
-    int? commentMark,
-    int? isFelt,
-    int? isBlocked,
-    int? canEdit,
-    int? banned,
-    String? state,
   }) {
     return Post(
       user: user ?? this.user,
@@ -105,14 +97,6 @@ class Post {
       wow: wow ?? this.wow,
       layout: layout ?? this.layout,
       type: type ?? this.type,
-      name: name ?? this.name,
-      feel: feel ?? this.feel,
-      commentMark: commentMark ?? this.commentMark,
-      isFelt: isFelt ?? this.isFelt,
-      isBlocked: isBlocked ?? this.isBlocked,
-      canEdit: canEdit ?? this.canEdit,
-      banned: banned ?? this.banned,
-      state: state ?? this.state,
     );
   }
 
