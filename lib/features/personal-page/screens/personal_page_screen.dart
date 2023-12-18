@@ -1910,7 +1910,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
+                                    child: topFriends![i].avatar.isNotEmpty
+                                    ? Image.network(
                                       topFriends![i].avatar,
                                       width:
                                           (MediaQuery.of(context).size.width -
@@ -1921,7 +1922,18 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                                   50) /
                                               3,
                                       fit: BoxFit.cover,
-                                    ),
+                                    ) : Image.asset(
+                                      'assets/images/default_avatar.png',
+                                      width:
+                                      (MediaQuery.of(context).size.width -
+                                          50) /
+                                          3,
+                                      height:
+                                      (MediaQuery.of(context).size.width -
+                                          50) /
+                                          3,
+                                      fit: BoxFit.cover,
+                                    )
                                   ),
                                   const SizedBox(
                                     height: 5,
@@ -1967,18 +1979,30 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
+                                      child: topFriends![i].avatar.isNotEmpty
+                                          ? Image.network(
                                         topFriends![i].avatar,
                                         width:
-                                            (MediaQuery.of(context).size.width -
-                                                    50) /
-                                                3,
+                                        (MediaQuery.of(context).size.width -
+                                            50) /
+                                            3,
                                         height:
-                                            (MediaQuery.of(context).size.width -
-                                                    50) /
-                                                3,
+                                        (MediaQuery.of(context).size.width -
+                                            50) /
+                                            3,
                                         fit: BoxFit.cover,
-                                      ),
+                                      ) : Image.asset(
+                                        'assets/images/default_avatar.png',
+                                        width:
+                                        (MediaQuery.of(context).size.width -
+                                            50) /
+                                            3,
+                                        height:
+                                        (MediaQuery.of(context).size.width -
+                                            50) /
+                                            3,
+                                        fit: BoxFit.cover,
+                                      )
                                     ),
                                     const SizedBox(
                                       height: 5,
