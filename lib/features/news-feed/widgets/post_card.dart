@@ -3387,38 +3387,33 @@ class _PostCardState extends State<PostCard> {
                                           arguments: widget.post,
                                         );
                                       },
-                                      child: (widget.post.image!.isNotEmpty)
-                                          ? Image.network(
-                                              widget.post.image![0],
-                                              width:
-                                                  (widget.post.image!.length >
-                                                              2 &&
-                                                          widget.post.image!
-                                                                  .length <
-                                                              5)
-                                                      ? MediaQuery.of(context)
-                                                              .size
-                                                              .width *
-                                                          2 /
-                                                          3 *
-                                                          0.99
-                                                      : MediaQuery.of(context)
-                                                              .size
-                                                              .width /
-                                                          2 *
-                                                          0.99,
-                                              height:
-                                                  widget.post.image!.length >= 5
-                                                      ? leftImageHeight / 2 -
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width /
-                                                              2 *
-                                                              0.005
-                                                      : leftImageHeight,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : (Text('')),
+                                      child: (widget.post.image != null && widget.post.image!.isNotEmpty)
+                                      ? Image.network(
+                                        widget.post.image![0],
+                                        width: (widget.post.image!.length > 2 &&
+                                                widget.post.image!.length < 5)
+                                            ? MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                2 /
+                                                3 *
+                                                0.99
+                                            : MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                2 *
+                                                0.99,
+                                        height: widget.post.image!.length >= 5
+                                            ? leftImageHeight / 2 -
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    2 *
+                                                    0.005
+                                            : leftImageHeight,
+                                        fit: BoxFit.cover,
+                                      )
+                                          : Container(),
                                     ),
                                     if (widget.post.image!.length >= 5)
                                       Padding(

@@ -1,12 +1,18 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:anti_facebook_app/features/news-feed/widgets/story_card.dart';
+import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../models/user.dart';
+import '../../../utils/httpRequest.dart';
 import '../../news-feed/widgets/post_card.dart';
+import 'edit_user_page.dart';
 
 class PersonalPageScreen extends StatefulWidget {
   static const String routeName = '/personal-page';
@@ -21,11 +27,369 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   final TextEditingController searchController = TextEditingController();
   final Random random = Random();
   bool isMine = false;
+  late bool isFriend = false;
+  late bool isRequestFriend = false;
   int mutualFriends = 0;
+  final String getListPosts = 'https://it4788.catan.io.vn/get_list_posts';
+  final String getUserInfo = 'https://it4788.catan.io.vn/get_user_info';
+  final String apiGetUserFriend = 'https://it4788.catan.io.vn/get_user_friends';
+  final String authToken = GlobalVariables.token;
+
+  late User newUser = widget.user;
+  late String userName = widget.user.name ?? "";
+  late String avatar = widget.user.avatar ?? "";
+  late String coverImage = widget.user.cover ?? "";
+  late String country = widget.user.country ?? "";
+  late String address = widget.user.address ?? "";
+  late String description = widget.user.bio ?? "";
+  late String coins = widget.user.coins ?? "50";
+  late List<User> topFriends = [];
+
+  Future getInfo() async {
+    var data = {
+      "user_id": widget.user.userId,
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(getUserInfo),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode == 201) {
+        var responseData = json.decode(response.body);
+
+        String id = responseData['data']['id'];
+        String username = responseData['data']['username'];
+        String created = responseData['data']['created'];
+        String description = responseData['data']['description'];
+        String avatar = responseData['data']['avatar'];
+        String coverImage = responseData['data']['cover_image'];
+        String link = responseData['data']['link'];
+        String address = responseData['data']['address'];
+        String city = responseData['data']['city'];
+        String country = responseData['data']['country'];
+        String listing = responseData['data']['listing'];
+        String is_friend = responseData['data']['is_friend'];
+        String online = responseData['data']['online'];
+        String coins = responseData['data']['coins'];
+        setState(() {
+          isFriend = is_friend == "0" ? false : true;
+          userName = username;
+          this.avatar = avatar;
+          this.country = country;
+          this.address = address;
+          this.description = description;
+          this.coins = coins;
+          this.coverImage = coverImage;
+
+          this.newUser = newUser.copyWith(name: userName, avatar: avatar, cover: coverImage,
+              bio: description, address: address, city: city, country: country, link: link, coins: coins, userId: id);
+        });
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get friends. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to get info');
+    }
+  }
+
+  List<Post> listPosts = [];
+  Future getPosts() async {
+    var data = {
+      "user_id": widget.user.userId,
+      "index": "0",
+      "count": "10",
+    };
+
+    try {
+      var response = await http.post(
+        Uri.parse(getListPosts),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        List<dynamic> posts = responseData['data']['post'];
+        List<Post> temp = [];
+        for (var post in posts) {
+          String postId = post['id'];
+          String postName = post['name'];
+          List<dynamic> postImages = post['image'];
+          String postDescribed = post['described'];
+          String postCreated = post['created'];
+          String postFeel = post['feel'];
+          String postCommentMark = post['comment_mark'];
+          String postIsFelt = post['is_felt'];
+          String postIsBlocked = post['is_blocked'];
+          String postCanEdit = post['can_edit'];
+          String postBanned = post['banned'];
+          String postState = post['state'];
+          DateTime dateTime = DateTime.parse(postCreated);
+          DateTime now = DateTime.now();
+          Duration difference = now.difference(dateTime);
+          String time = formatTimeDifference(difference);
+
+          // Truy cập thông tin về tác giả
+          Map<String, dynamic> author = post['author'];
+          String authorId = author['id'];
+          String authorName = author['name'];
+          String authorAvatar = author['avatar'];
+
+          Post newPost =
+              // Post(
+              //     user: User(name: authorName, userId: authorId, avatar: authorAvatar),
+              //     time: time, shareWith: "public", comment: int.parse(postCommentMark), content: postDescribed  );
+              Post(
+            user: User(
+              name: authorName,
+              avatar: 'assets/images/user/lcd.jpg',
+              userId: authorId,
+            ),
+            time: time,
+            shareWith: 'public',
+            content: postDescribed,
+            image: ['assets/images/post/2.jpg'],
+            like: 163,
+            love: 24,
+            comment: int.parse(postCommentMark),
+            type: 'memory',
+          );
+          temp.add(newPost);
+        }
+        setState(() {
+          listPosts = temp;
+        });
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get friends. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to get post');
+    }
+  }
+  Future<void> _callAPI() async {
+    try {
+      Map<String, dynamic> requestData = {
+        "user_id": widget.user.userId,
+        "index": "0",
+        "count": "10"
+      };
+
+      var result = await callAPI('/get_list_posts',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+      listPosts = postsFromJson(result['post']);
+      setState(() {});
+      // }
+    } catch (error) {
+      // setState(() {});
+    }
+  }
+
+  Future setRequestFriend() async {
+    var data = {"user_id": widget.user.userId};
+    try {
+      var response = await http.post(
+        Uri.parse(GlobalVariables.apiSetRequestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          setState(() {
+            isRequestFriend = true;
+          });
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+
+  Future delRequestFriend() async {
+    var data = {"user_id": widget.user.userId};
+
+    try {
+      var response = await http.post(
+        Uri.parse(GlobalVariables.apiDelRequestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          setState(() {
+            isRequestFriend = false;
+          });
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+
+  Future setBlock() async {
+    var data = {"user_id": widget.user.userId};
+    try {
+      var response = await http.post(
+        Uri.parse(GlobalVariables.apiSetBlock),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+  Future unFriend() async{
+    var data = {"user_id": widget.user.userId};
+
+    try {
+      var response = await http.post(
+        Uri.parse(GlobalVariables.apiUnfriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          setState(() {
+            isFriend = false;
+          });
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+  Future getListFriend() async {
+    var data = {
+      "index": "0",
+      "count": "5",
+      "user_id": widget.user.userId
+    };
+    try {
+      var response = await http.post(
+        Uri.parse(apiGetUserFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        Map<String, dynamic> data = responseData['data'];
+        List<dynamic> requests = data['friends'];
+        List<User> tempFriend= [];
+        for (var request in requests) {
+          String username = request['username'];
+          String id = request['id'];
+          String avatar = request['avatar'];
+          User user = User(name: username, avatar: avatar, userId: id);
+          tempFriend.add(user);
+          print("1121" + username);
+        }
+        setState(() {
+          topFriends = tempFriend;
+        });
+
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get friends. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to get friends');
+    }
+
+    }
+  String formatTimeDifference(Duration difference) {
+    if (difference.inMinutes < 60) {
+      return "${difference.inMinutes} phút";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours} giờ";
+    } else if (difference.inDays < 7) {
+      return "${difference.inDays} ngày";
+    } else if (difference.inDays < 30) {
+      int weeks = (difference.inDays / 7).floor();
+      return "$weeks tuần";
+    } else if (difference.inDays < 365) {
+      int months = (difference.inDays / 30).floor();
+      return "$months tháng";
+    } else {
+      int years = (difference.inDays / 365).floor();
+      return "$years năm";
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getListFriend();
+    _callAPI();
+    getInfo();
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<UserProvider>(context).user;
-    if (widget.user.avatar != user.avatar) {
+    if (widget.user.userId != user.userId) {
       user = widget.user;
 
       if (user.friends == null) {
@@ -49,6 +413,14 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
         isMine = true;
       });
     }
+    void _goToEditUserPage() {
+      Navigator.pushNamed(
+        context,
+        EditUserPage.routeName,
+        arguments: newUser,
+      );
+    }
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60),
@@ -138,9 +510,9 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   width: double.infinity,
                   height: 270,
                 ),
-                user.cover != null
-                    ? Image.asset(
-                        user.cover!,
+                coverImage != ""
+                    ? Image.network(
+                        coverImage,
                         fit: BoxFit.cover,
                         height: 220,
                         width: double.infinity,
@@ -165,7 +537,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                           ),
                         ),
                         child: CircleAvatar(
-                          backgroundImage: AssetImage(user.avatar),
+                          backgroundImage: NetworkImage(avatar),
                           radius: 75,
                         ),
                       ),
@@ -242,7 +614,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   Row(
                     children: [
                       Text(
-                        user.name,
+                        userName,
                         style: const TextStyle(
                           color: Colors.black,
                           fontSize: 23,
@@ -259,6 +631,19 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               ),
                             )
                           : const SizedBox()),
+                      Text(
+                        " - $coins",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        Icons.currency_bitcoin_sharp,
+                        color: Color.fromARGB(255, 99, 99, 7),
+                        size: 20.0,
+                      ),
                     ],
                   ),
                   const SizedBox(
@@ -383,7 +768,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                   ),
                   if (user.bio != null)
                     Text(
-                      user.bio!,
+                      description,
                       style: const TextStyle(
                         fontSize: 16,
                       ),
@@ -435,7 +820,9 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               children: [
                                 Expanded(
                                   child: ElevatedButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        _goToEditUserPage();
+                                      },
                                       style: ElevatedButton.styleFrom(
                                         shadowColor: Colors.transparent,
                                         shape: RoundedRectangleBorder(
@@ -495,7 +882,147 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                 Expanded(
                                   flex: 3,
                                   child: ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      if (!isFriend && !isRequestFriend) {
+                                        setRequestFriend();
+                                      } else if (!isFriend && isRequestFriend) {
+                                        delRequestFriend();
+                                      } else if (isFriend) {
+                                        showModalBottomSheet<void>(
+                                          context: context,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              topRight: Radius.circular(20),
+                                            ),
+                                          ),
+                                          builder: (BuildContext context) {
+                                            return DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                shape: BoxShape.rectangle,
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                              ),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  ListTile(
+                                                    minLeadingWidth: 10,
+                                                    leading: const ImageIcon(
+                                                      AssetImage(
+                                                          'assets/images/block.png'),
+                                                      size: 25,
+                                                      color: Colors.black,
+                                                    ),
+                                                    title: GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.pop(context);
+                                                        setBlock();
+                                                      },
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                        children: [
+                                                        Text(
+                                                        'Chặn trang cá nhân của ${widget.user.name}',
+                                                        style:
+                                                        const TextStyle(
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                        FontWeight.w500,
+                                                        fontSize: 16,
+                                                        ),
+                                                        ),
+                                                        const SizedBox(
+                                                        height: 5,
+                                                        ),
+                                                        Text(
+                                                        '${widget.user.name} sẽ không thể nhìn thấy bạn hoặc liên hệ với bạn trên Facebook.',
+                                                        style:
+                                                        const TextStyle(
+                                                        color:
+                                                        Colors.black54,
+                                                        fontSize: 14,
+                                                        ),
+                                                        ),
+                                                        ],
+                                                        )
+                                                    ),
+
+                                                  ),
+                                                  ListTile(
+                                                    minLeadingWidth: 10,
+                                                    leading: const ImageIcon(
+                                                      AssetImage(
+                                                          'assets/images/unfriend.png'),
+                                                      size: 25,
+                                                      color: Colors.red,
+                                                    ),
+                                                    title: GestureDetector(
+                                                      onTap: () {
+                                                        Navigator.of(context).pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext context) {
+                                                            return AlertDialog(
+                                                              title: const Text("Hủy kết bạn"),
+                                                              content: Text("Bạn có chắc chắn muốn hủy kết bạn với ${widget.user.name}?"),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed: () {
+                                                                    unFriend();
+                                                                    Navigator.of(context).pop();
+                                                                  },
+                                                                  child: const Text("Đồng ý", style: TextStyle(color: Colors.black),),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () {
+                                                                    Navigator.of(context).pop();
+                                                                  },
+                                                                  child: const Text("Hủy bỏ",  style: TextStyle(color: Colors.black)),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      },
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                        CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            'Hủy kết bạn với ${widget.user.name}',
+                                                            style: const TextStyle(
+                                                              color: Colors.red,
+                                                              fontWeight: FontWeight.w500,
+                                                              fontSize: 16,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          Text(
+                                                            'Hủy kết bạn với ${widget.user.name}',
+                                                            style: const TextStyle(
+                                                              color: Colors.black54,
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       shadowColor: Colors.transparent,
                                       shape: RoundedRectangleBorder(
@@ -504,7 +1031,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                       backgroundColor: Colors.grey[200],
                                       padding: EdgeInsets.zero,
                                     ),
-                                    child: const Row(
+                                    child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       crossAxisAlignment:
@@ -520,7 +1047,11 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                           width: 5,
                                         ),
                                         Text(
-                                          'Bạn bè',
+                                          isFriend
+                                              ? 'Bạn bè'
+                                              : !isRequestFriend
+                                                  ? 'Thêm bạn bè'
+                                                  : "Hủy lời mời",
                                           style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.black,
@@ -1005,7 +1536,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: user.address,
+                                    text: address,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -1051,7 +1582,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ),
                                   TextSpan(
-                                    text: user.hometown,
+                                    text: country,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -1363,22 +1894,22 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                  if (user.topFriends != null)
+                  if (topFriends.isNotEmpty)
                     Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             for (int i = 0;
-                                i < min(3, user.topFriends!.length);
+                                i < min(3, topFriends!.length);
                                 i++)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      user.topFriends![i].avatar,
+                                    child: Image.network(
+                                      topFriends![i].avatar,
                                       width:
                                           (MediaQuery.of(context).size.width -
                                                   50) /
@@ -1398,7 +1929,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                             50) /
                                         3,
                                     child: Text(
-                                      user.topFriends![i].name,
+                                      topFriends![i].name,
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500,
@@ -1408,7 +1939,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                   ),
                                 ],
                               ),
-                            for (int i = min(3, user.topFriends!.length);
+                            for (int i = min(3, topFriends!.length);
                                 i < 3;
                                 i++)
                               SizedBox(
@@ -1418,24 +1949,24 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               ),
                           ],
                         ),
-                        if (user.topFriends!.length > 3)
+                        if (topFriends!.length > 3)
                           const SizedBox(
                             height: 10,
                           ),
-                        if (user.topFriends!.length > 3)
+                        if (topFriends!.length > 3)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               for (int i = 3;
-                                  i < min(6, user.topFriends!.length);
+                                  i < min(6, topFriends!.length);
                                   i++)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        user.topFriends![i].avatar,
+                                      child: Image.network(
+                                        topFriends![i].avatar,
                                         width:
                                             (MediaQuery.of(context).size.width -
                                                     50) /
@@ -1456,7 +1987,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                                   50) /
                                               3,
                                       child: Text(
-                                        user.topFriends![i].name,
+                                        topFriends![i].name,
                                         style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
@@ -1466,7 +1997,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ],
                                 ),
-                              for (int i = min(6, user.topFriends!.length);
+                              for (int i = min(6, topFriends!.length);
                                   i < 6;
                                   i++)
                                 SizedBox(
@@ -1567,7 +2098,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                           right: 10,
                         ),
                         child: CircleAvatar(
-                          backgroundImage: AssetImage(user.avatar),
+                          backgroundImage: NetworkImage(avatar),
                           radius: 20,
                         ),
                       ),
@@ -1794,21 +2325,25 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                 height: 10,
                 color: Colors.grey,
               ),
-            if (user.posts != null)
-              for (int i = 0; i < user.posts!.length; i++)
-                Column(
-                  children: [
-                    const SizedBox(height: 10),
-                    // PostCard(
-                    //   post: user.posts![i],
-                    // ),
-                    Container(
-                      width: double.infinity,
-                      height: 5,
-                      color: Colors.grey,
-                    ),
-                  ],
-                )
+            Column(
+              children: listPosts
+                  .map((post) => Column(
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  PostCard(
+                    post: post,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 5,
+                    color: Colors.black26,
+                  ),
+                ],
+              ))
+                  .toList(),
+            ),
           ],
         ),
       ),

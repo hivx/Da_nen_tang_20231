@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../models/user.dart';
+import '../../personal-page/screens/personal_page_screen.dart';
 
 class FriendsSuggestScreen extends StatefulWidget {
   static const String routeName = '/friends-suggest-screen';
@@ -27,105 +32,152 @@ class FriendRequest {
 
 class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
   final today = DateTime.now();
-  final friends = [
-    FriendRequest(
-      user: User(
-        name: 'Minh Hương',
-        avatar: 'assets/images/user/minhhuong.jpg',
-      ),
-      time: '1 tuần',
-      mutualFriends: 25,
-      f1: User(
-        name: 'Khánh Vy',
-        avatar: 'assets/images/user/khanhvy.jpg',
-      ),
-      f2: User(
-        name: 'Leo Messi',
-        avatar: 'assets/images/user/messi.jpg',
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Khánh Vy',
-        avatar: 'assets/images/user/khanhvy.jpg',
-      ),
-      time: '3 tuần',
-      mutualFriends: 1,
-      f1: User(
-        name: 'Bảo Ngân',
-        avatar: 'assets/images/user/baongan.jpg',
-      ),
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Vương Hồng Thúy',
-        avatar: 'assets/images/user/vuonghongthuy.jpg',
-      ),
-      time: '2 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Leo Messi',
-        avatar: 'assets/images/user/messi.jpg',
-      ),
-      mutualFriends: 455,
-      f1: User(
-        name: 'Minh Hương',
-        avatar: 'assets/images/user/minhhuong.jpg',
-      ),
-      f2: User(
-        name: 'Hà Linhh',
-        avatar: 'assets/images/user/halinh.jpg',
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Nguyễn Thị Minh Tuyền',
-        avatar: 'assets/images/user/minhtuyen.jpg',
-      ),
-      time: '2 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Hà Linhh',
-        avatar: 'assets/images/user/halinh.jpg',
-      ),
-      time: '4 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Bảo Ngân',
-        avatar: 'assets/images/user/baongan.jpg',
-      ),
-      time: '5 năm',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Doraemon',
-        avatar: 'assets/images/user/doraemon.jpg',
-      ),
-      time: '1 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Minh Trí',
-        avatar: 'assets/images/user/minhtri.jpg',
-      ),
-      time: '4 tuần',
-    ),
-    FriendRequest(
-      user: User(
-        name: 'Sách Cũ Ngọc',
-        avatar: 'assets/images/user/sachcungoc.jpg',
-      ),
-      time: '1 tuần',
-    ),
-  ];
+  List<FriendRequest> friends = [];
+  final String apiGetSuggestFriend =
+      'https://it4788.catan.io.vn/get_suggested_friends';
+  final String apiSetRequestFriend =
+      'https://it4788.catan.io.vn/set_request_friend';
+  final String apiDelRequestFriend =
+      'https://it4788.catan.io.vn/del_request_friend';
+  final String authToken = GlobalVariables.token;
 
+  Future getData() async {
+    var data = {"index": "0", "count": "10"};
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiGetSuggestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+
+        List<FriendRequest> tempFriendRequests = [];
+        for (var suggest in responseData['data']) {
+          String username = suggest['username'];
+          String id = suggest['id'];
+          String avatar = suggest['avatar'];
+          int sameFriends = int.parse(suggest['same_friends']);
+          String created = suggest['created'];
+          DateTime dateTime = DateTime.parse(created);
+          DateTime now = DateTime.now();
+          Duration difference = now.difference(dateTime);
+
+          String formattedTime = formatTimeDifference(difference);
+          FriendRequest friendRequest = FriendRequest(
+              user: User(name: username, avatar: avatar, userId: id),
+              time: formattedTime,
+              mutualFriends: sameFriends);
+          tempFriendRequests.add(friendRequest);
+        }
+
+        setState(() {
+          friends = tempFriendRequests;
+        });
+        print(responseData);
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get data. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error4: $e');
+      throw Exception('Failed to get data');
+    }
+  }
+
+  String formatTimeDifference(Duration difference) {
+    if (difference.inMinutes < 60) {
+      return "${difference.inMinutes} phút";
+    } else if (difference.inHours < 24) {
+      return "${difference.inHours} giờ";
+    } else if (difference.inDays < 7) {
+      return "${difference.inDays} ngày";
+    } else if (difference.inDays < 30) {
+      int weeks = (difference.inDays / 7).floor();
+      return "$weeks tuần";
+    } else if (difference.inDays < 365) {
+      int months = (difference.inDays / 30).floor();
+      return "$months tháng";
+    } else {
+      int years = (difference.inDays / 365).floor();
+      return "$years năm";
+    }
+  }
+
+  Future setRequestFriend(String? userId, int index,void Function(bool) updateIsRequestFriend) async {
+    var data = {"user_id": userId};
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiSetRequestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          print("ok");
+          updateIsRequestFriend(true);
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+
+  Future delRequestFriend(String? userId, int index, void Function(bool) updateIsRequestFriend ) async {
+    var data = {"user_id": userId};
+
+    try {
+      var response = await http.post(
+        Uri.parse(apiDelRequestFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        if (responseData['message'] == "OK") {
+          updateIsRequestFriend(false);
+        }
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to set request friend. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to set request friend');
+    }
+  }
+
+  void delSuggestFriend(int index) {
+    setState(() {
+      friends.removeAt(index);
+    });
+  }
   @override
   void initState() {
     super.initState();
+    getData();
   }
 
   @override
@@ -201,170 +253,229 @@ class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
             for (int i = 0; i < friends.length; i++)
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black12,
-                          width: 0.5,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage(friends[i].user.avatar),
-                        radius: 46,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                friends[i].user.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                friends[i].time,
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (friends[i].mutualFriends != null &&
-                              friends[i].mutualFriends! > 0)
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 2,
-                              ),
-                              child: Row(
-                                children: [
-                                  Stack(
-                                    children: [
-                                      friends[i].f2 != null
-                                          ? const SizedBox(
-                                              width: 46,
-                                              height: 28,
-                                            )
-                                          : const SizedBox(
-                                              width: 28,
-                                              height: 28,
-                                            ),
-                                      if (friends[i].f2 != null)
-                                        Positioned(
-                                          left: 22,
-                                          top: 2,
-                                          child: CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                friends[i].f2!.avatar),
-                                            radius: 12,
-                                          ),
-                                        ),
-                                      Positioned(
-                                        left: 0,
-                                        top: 0,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              color: Colors.white,
-                                              width: 2,
-                                            ),
-                                          ),
-                                          child: CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                friends[i].f1!.avatar),
-                                            radius: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    '${friends[i].mutualFriends} bạn chung',
-                                    style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    shadowColor: Colors.transparent,
-                                    backgroundColor: Colors.blue[700],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Thêm bạn bè',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    shadowColor: Colors.transparent,
-                                    backgroundColor: Colors.grey[300],
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Gỡ',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      PersonalPageScreen.routeName,
+                      arguments: friends[i].user,
+                    );
+                  },
+                  child:FriendWidget(
+                    friend: friends[i],
+                    index: i,
+                    setRequestFriend: setRequestFriend,
+                    delRequestFriend: delRequestFriend,
+                    delSuggestFriend: delSuggestFriend,
+                  ),
                 ),
               )
           ],
         ),
       ),
     );
+  }
+}
+
+class FriendWidget extends StatefulWidget {
+  final FriendRequest friend;
+  final int index;
+  final Future Function(String? userId, int index, void Function(bool) updateIsRequestFriend) setRequestFriend;
+  final Future Function(String? userId, int index, void Function(bool) updateIsRequestFriend) delRequestFriend;
+  final void Function(int index) delSuggestFriend;
+
+  const FriendWidget({
+    required this.friend,
+    required this.index,
+    required this.setRequestFriend,
+    required this.delRequestFriend,
+    required this.delSuggestFriend,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _FriendWidgetState createState() => _FriendWidgetState();
+}
+
+class _FriendWidgetState extends State<FriendWidget> {
+  bool isRequestFriend = false;
+  void updateIsRequestFriend(bool value) {
+    setState(() {
+      isRequestFriend = value;
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.black12,
+                width: 0.5,
+              ),
+            ),
+            child: CircleAvatar(
+              backgroundImage: NetworkImage(widget.friend.user.avatar),
+              radius: 46,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      widget.friend.user.name,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      widget.friend.time,
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                if (widget.friend.mutualFriends != null &&
+                    widget.friend.mutualFriends! > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 2,
+                    ),
+                    child: Row(
+                      children: [
+                        // Stack(
+                        //   children: [
+                        //     widget.friend.f2 != null
+                        //         ? const SizedBox(
+                        //       width: 46,
+                        //       height: 28,
+                        //     )
+                        //         : const SizedBox(
+                        //       width: 28,
+                        //       height: 28,
+                        //     ),
+                        //     if (widget.friend.f2 != null)
+                        //       Positioned(
+                        //         left: 22,
+                        //         top: 2,
+                        //         child: CircleAvatar(
+                        //           backgroundImage:
+                        //           NetworkImage(widget.friend.f2!.avatar),
+                        //           radius: 12,
+                        //         ),
+                        //       ),
+                        //     Positioned(
+                        //       left: 0,
+                        //       top: 0,
+                        //       child: Container(
+                        //         decoration: BoxDecoration(
+                        //           shape: BoxShape.circle,
+                        //           border: Border.all(
+                        //             color: Colors.white,
+                        //             width: 2,
+                        //           ),
+                        //         ),
+                        //         child: CircleAvatar(
+                        //           backgroundImage:
+                        //           NetworkImage(widget.friend.f1!.avatar),
+                        //           radius: 12,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '${widget.friend.mutualFriends} bạn chung',
+                          style: const TextStyle(
+                            color: Colors.black54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    Visibility(
+                      visible: !isRequestFriend,
+                      child: Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            widget.setRequestFriend(widget.friend.user.userId, widget.index,updateIsRequestFriend);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shadowColor: Colors.transparent,
+                            backgroundColor: Colors.blue[700],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            'Thêm bạn bè',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (!isRequestFriend) {
+                            widget.delSuggestFriend(widget.index);
+                          } else {
+                            widget.delRequestFriend(widget.friend.user.userId, widget.index,updateIsRequestFriend);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent,
+                          backgroundColor: Colors.grey[300],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          !isRequestFriend ? 'Gỡ' : "Hủy",
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ) ;
   }
 }

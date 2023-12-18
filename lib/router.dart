@@ -1,3 +1,4 @@
+import 'package:anti_facebook_app/features/block/screens/block_screen.dart';
 import 'package:anti_facebook_app/features/comment/screens/comment_screen.dart';
 import 'package:anti_facebook_app/features/friends/screens/friends_screen.dart';
 import 'package:anti_facebook_app/features/friends/screens/friends_search_screen.dart';
@@ -8,6 +9,7 @@ import 'package:anti_facebook_app/features/memory/screens/memory_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/image_fullscreen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/multiple_images_post_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/widgets/story_details.dart';
+import 'package:anti_facebook_app/features/personal-page/screens/edit_user_page.dart';
 import 'package:anti_facebook_app/features/personal-page/screens/personal_page_screen.dart';
 import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/models/product.dart';
@@ -190,6 +192,43 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
 
           var tween =
               Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
+    case EditUserPage.routeName:
+      final User user = routeSettings.arguments as User;
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            EditUserPage(user: user),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      );
+    case BlockScreen.routeName:
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+        const BlockScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.ease;
+
+          var tween =
+          Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),

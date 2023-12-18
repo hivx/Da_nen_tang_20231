@@ -22,6 +22,11 @@ class User {
   late List<Post>? posts;
   late String? pageType;
   late String? address;
+  late String? city;
+  late String? country;
+  late String? link;
+  late String? userId;
+  late String? coins;
   User({
     this.id,
     required this.name,
@@ -43,6 +48,11 @@ class User {
     this.posts,
     this.pageType,
     this.address,
+    this.city,
+    this.country,
+    this.link,
+    this.userId,
+    this.coins,
   });
 
   User copyWith({
@@ -66,6 +76,11 @@ class User {
     List<Post>? posts,
     String? pageType,
     String? address,
+    String? city,
+    String? country,
+    String? link,
+    String? userId,
+    String? coins,
   }) {
     return User(
       id: id ?? this.id,
@@ -88,6 +103,11 @@ class User {
       posts: posts ?? this.posts,
       pageType: pageType ?? this.pageType,
       address: address ?? this.address,
+      city: city ?? this.city,
+      country: country ?? this.country,
+      link: link ?? this.link,
+      userId: userId ?? this.userId,
+      coins: coins ?? this.coins,
     );
   }
 

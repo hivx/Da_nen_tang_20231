@@ -4,7 +4,11 @@ import 'package:anti_facebook_app/features/menu/widgets/menu_choice.dart';
 import 'package:anti_facebook_app/features/menu/widgets/shortcut.dart';
 import 'package:anti_facebook_app/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../login.dart';
+import '../../../providers/user_provider.dart';
+import '../../block/screens/block_screen.dart';
 import '../../memory/screens/memory_screen.dart';
 import '../../personal-page/screens/personal_page_screen.dart';
 
@@ -23,7 +27,7 @@ class _MenuScreenState extends State<MenuScreen> {
   ScrollController scrollController =
       ScrollController(initialScrollOffset: MenuScreen.offset);
   ScrollController headerScrollController = ScrollController();
-  User user = User(name: 'Lê Công Đắt', avatar: 'assets/images/user/lcd.jpg');
+
   User secondUser =
       User(name: 'Leo Messi', avatar: 'assets/images/user/messi.jpg');
   final List<Widget> shortcuts = [
@@ -301,6 +305,7 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User user = Provider.of<UserProvider>(context).user;
     scrollController.addListener(() {
       headerScrollController.jumpTo(headerScrollController.offset +
           scrollController.offset -
@@ -1702,29 +1707,37 @@ class _MenuScreenState extends State<MenuScreen> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.rectangle,
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 0.5,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 20,
-                                offset: const Offset(0, 0),
-                                spreadRadius: 0,
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            BlockScreen.routeName,
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              border: Border.all(
+                                color: Colors.black12,
+                                width: 0.5,
                               ),
-                            ]),
-                        child: const MenuChoice(
-                            img: 'assets/images/menu/settings2.png',
-                            title: 'Cài đặt'),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 0),
+                                  spreadRadius: 0,
+                                ),
+                              ]),
+                          child: const MenuChoice(
+                              img: 'assets/images/menu/settings2.png',
+                              title: 'Cài đặt'),
+                        ),
                       ),
                     ],
                   ),
@@ -1746,7 +1759,13 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 0.5,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Login()),
+                          );
+                        },
                         child: const Text(
                           'Đăng xuất',
                           style: TextStyle(
