@@ -91,7 +91,7 @@ class _ProfileContentState extends State<ProfileContent> {
 
   final ImagePicker imagePicker = ImagePicker();
   void selectImages() async {
-    final XFile? selectedImages =
+    var selectedImages =
         await imagePicker.pickImage(source: ImageSource.gallery);
     if (selectedImages != null) {
       setState(() {
@@ -166,30 +166,29 @@ class _ProfileContentState extends State<ProfileContent> {
       }
     }
     try {
-      // formData.send().then((response) {
-      //   response.stream.bytesToString().then((value) {
-      //     print(json.decode(value)['message']);
-      //     if(json.decode(value)['message'] == "OK") {
-      //       UserProvider userProvider = UserProvider();
-      //       userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
-      //     }
-      //     // Navigator.pushNamed(
-      //     //   context,
-      //     //   PersonalPageScreen.routeName,
-      //     //   arguments: Provider.of<UserProvider>(context, listen: false).user,
-      //     // );
-      //   });
-      // });
-      final response = await formData.send();
-      if (response.statusCode == 201) {
-        print("success");
-        // UserProvider userProvider = UserProvider();
-        // userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
-      } else {
-        throw Exception(
-            'Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString().toString()}');
-      }
-
+      formData.send().then((response) {
+        response.stream.bytesToString().then((value) {
+          print(json.decode(value)['message']);
+          if(json.decode(value)['message'] == "OK") {
+            UserProvider userProvider = UserProvider();
+            userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
+          }
+          Navigator.pushNamed(
+            context,
+            PersonalPageScreen.routeName,
+            arguments: Provider.of<UserProvider>(context, listen: false).user,
+          );
+        });
+      });
+      // final response = await formData.send();
+      // if (response.statusCode == 201) {
+      //   print("success");
+      //   // UserProvider userProvider = UserProvider();
+      //   // userProvider.updateUserData(name: userName, avatar: avatarImagePath, cover_image : coverImagePath, city: city, country: country , address: address, description: description, link: linkUser);
+      // } else {
+      //   throw Exception(
+      //       'Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString().toString()}');
+      // }
 
     } catch (e) {
       print('Error4: $e');
