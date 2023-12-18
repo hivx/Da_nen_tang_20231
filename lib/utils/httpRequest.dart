@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 Future<Map<String, dynamic>> callAPI(
     String endpoint, Map<String, dynamic> requestData) async {
   String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjE0LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI3MTk2OTF9.V7DNMEK2CCu0xf-Ki_uLk5s6VRBmYGjR4QF5EjddPkk';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
 
   Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -43,7 +45,7 @@ Future<Map<String, dynamic>> callAPI(
 Future<Map<String, dynamic>> callAPIcomment(
     String endpoint, Map<String, dynamic> requestData) async {
   String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjE0LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI3MTk2OTF9.V7DNMEK2CCu0xf-Ki_uLk5s6VRBmYGjR4QF5EjddPkk';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
 
   Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -73,6 +75,53 @@ Future<Map<String, dynamic>> callAPIcomment(
     }
   } catch (error) {
     // Xử lý khi có lỗi trong quá trình gửi request
+    print('Error while sending POST request: $error');
+    return {};
+  }
+}
+
+Future<Map<String, dynamic>> addPostWithImages(
+  String endpoint,
+  Map<String, dynamic> requestData,
+  List<File> images,
+) async {
+  String token =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
+
+  String url = 'https://it4788.catan.io.vn$endpoint';
+
+  try {
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.headers['Authorization'] = 'Bearer $token';
+
+    requestData.forEach((key, value) {
+      if (value is String) {
+        request.fields[key] = value;
+      }
+    });
+
+    // Thêm ảnh vào request
+    for (int i = 0; i < images.length; i++) {
+      List<int> imageBytes = await images[i].readAsBytes();
+      request.files.add(http.MultipartFile.fromBytes(
+        'image_$i',
+        imageBytes,
+        filename: 'file_image_$i.jpg',
+        // contentType: MediaType('image', 'jpeg'),
+      ));
+    }
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      print('POST request failed with status: ${response.statusCode}');
+      return {};
+    }
+  } catch (error) {
     print('Error while sending POST request: $error');
     return {};
   }

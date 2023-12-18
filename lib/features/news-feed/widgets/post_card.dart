@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:anti_facebook_app/constants/global_variables.dart';
+import 'package:anti_facebook_app/dangBai.dart';
 import 'package:anti_facebook_app/features/comment/screens/comment_screen.dart';
 import 'package:anti_facebook_app/features/home/screens/home_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/image_fullscreen.dart';
 import 'package:anti_facebook_app/features/news-feed/screen/multiple_images_post_screen.dart';
 import 'package:anti_facebook_app/features/news-feed/widgets/post_content.dart';
 import 'package:anti_facebook_app/models/post.dart';
+import 'package:anti_facebook_app/suaBai.dart';
 import 'package:anti_facebook_app/utils/httpRequest.dart';
 import 'package:anti_facebook_app/utils/time_utils.dart';
 import 'package:flutter/material.dart';
@@ -397,7 +399,17 @@ class _PostCardState extends State<PostCard> {
                                                 Material(
                                                   color: Colors.transparent,
                                                   child: InkWell(
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              SuaBai(
+                                                                  post: widget
+                                                                      .post), // Truyền giá trị idPost vào đây
+                                                        ),
+                                                      );
+                                                    },
                                                     borderRadius:
                                                         const BorderRadius.only(
                                                       topLeft:
@@ -435,7 +447,7 @@ class _PostCardState extends State<PostCard> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Hiển thị thêm',
+                                                            'Sửa bài',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.black,
@@ -449,7 +461,7 @@ class _PostCardState extends State<PostCard> {
                                                             height: 5,
                                                           ),
                                                           Text(
-                                                            'Bạn sẽ nhìn thấy nhiều bài viết tương tự hơn.',
+                                                            '',
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .black54,
@@ -644,7 +656,7 @@ class _PostCardState extends State<PostCard> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Ẩn bài viết',
+                                                            'Xóa bài viết',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.black,
@@ -658,7 +670,7 @@ class _PostCardState extends State<PostCard> {
                                                             height: 5,
                                                           ),
                                                           Text(
-                                                            'Ẩn bớt các bài viết tương tự.',
+                                                            '',
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .black54,
@@ -2104,7 +2116,17 @@ class _PostCardState extends State<PostCard> {
                                                 Material(
                                                   color: Colors.transparent,
                                                   child: InkWell(
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              SuaBai(
+                                                                  post: widget
+                                                                      .post), // Truyền giá trị idPost vào đây
+                                                        ),
+                                                      );
+                                                    },
                                                     borderRadius:
                                                         const BorderRadius.only(
                                                       topLeft:
@@ -2142,7 +2164,7 @@ class _PostCardState extends State<PostCard> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Hiển thị thêm',
+                                                            'Sửa bài',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.black,
@@ -2156,7 +2178,7 @@ class _PostCardState extends State<PostCard> {
                                                             height: 5,
                                                           ),
                                                           Text(
-                                                            'Bạn sẽ nhìn thấy nhiều bài viết tương tự hơn.',
+                                                            '',
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .black54,
@@ -2351,7 +2373,7 @@ class _PostCardState extends State<PostCard> {
                                                                 .start,
                                                         children: [
                                                           Text(
-                                                            'Ẩn bài viết',
+                                                            'Xóa bài viết',
                                                             style: TextStyle(
                                                               color:
                                                                   Colors.black,
@@ -2365,7 +2387,7 @@ class _PostCardState extends State<PostCard> {
                                                             height: 5,
                                                           ),
                                                           Text(
-                                                            'Ẩn bớt các bài viết tương tự.',
+                                                            '',
                                                             style: TextStyle(
                                                               color: Colors
                                                                   .black54,

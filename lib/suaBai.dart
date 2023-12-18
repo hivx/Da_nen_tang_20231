@@ -1,23 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:anti_facebook_app/features/home/screens/home_screen.dart';
+import 'package:anti_facebook_app/models/post.dart';
 import 'package:anti_facebook_app/utils/httpRequest.dart';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-class DangBai extends StatefulWidget {
-  const DangBai({super.key});
+class SuaBai extends StatefulWidget {
+  final Post post;
+  const SuaBai({
+    Key? key,
+    required this.post,
+  }) : super(key: key);
 
   @override
-  _DangBaiWidgetState createState() => _DangBaiWidgetState();
+  _SuaBaiWidgetState createState() => _SuaBaiWidgetState();
 }
 
-class _DangBaiWidgetState extends State<DangBai> {
+class _SuaBaiWidgetState extends State<SuaBai> {
   get confirm => null;
-  bool isColumnVisible = false;
+  bool isColumnVisible = true;
   bool expanded = false;
   XFile? selectedVideo;
   String described = '';
@@ -25,6 +27,7 @@ class _DangBaiWidgetState extends State<DangBai> {
   List<String> _imagePaths = [];
   final picker = ImagePicker();
   List<File> images = [];
+  TextEditingController _controller = TextEditingController();
 
   String imagePath = "";
 
@@ -33,6 +36,7 @@ class _DangBaiWidgetState extends State<DangBai> {
   @override
   void initState() {
     super.initState();
+    _controller.text = widget.post.content.toString();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         setState(() {
@@ -49,7 +53,6 @@ class _DangBaiWidgetState extends State<DangBai> {
   Future<void> getImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-
     if (pickedFile != null) {
       setState(() {
         images.add(File(pickedFile.path));
@@ -59,17 +62,26 @@ class _DangBaiWidgetState extends State<DangBai> {
     }
   }
 
-
   Future uploadImagesToServer() async {
     try {
+      print({
+        'video': '',
+        'id': widget.post.id,
+        // 'image': [],
+        "described": described,
+        "status": "tuyệt",
+        "auto_accept": "1"
+      });
       await addPostWithImages(
-          '/add_post',
+          '/edit_post',
           {
             'video': '',
-            // 'image': [],
+            'id': widget.post.id.toString(),
             "described": described,
             "status": "tuyệt",
-            "auto_accept": "1"
+            "auto_accept": "1",
+            'image_del': '',
+            'image_sort': '',
           },
           images);
       Navigator.pushReplacement(
@@ -80,52 +92,7 @@ class _DangBaiWidgetState extends State<DangBai> {
     } catch (error) {
       setState(() {});
     }
-    // var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
-    // request.headers['Content-Type'] = 'multipart/form-data';
-    // request.headers['Authorization'] = 'Bearer $authToken';
-    // request.fields['described'] = described;
-    // request.fields['video'] = '';
-    // request.fields['status'] = status;
-    // request.fields['auto_accept'] = '1';
-
-    // List<http.MultipartFile> multipartFiles = [];
-    // for (var imagePath in imagePaths) {
-    //   final file = File(imagePath);
-    //   List<int> fileBytes = await file.readAsBytes();
-    //   // if (fileBytes != null) {
-    //   var fileImage = http.MultipartFile.fromBytes(
-    //     'image', fileBytes,
-    //     filename: imagePath.split('/').last,
-    //     // Lấy tên tệp từ đường dẫn
-    //   );
-    //   // request.files.add(fileImage);
-    //   print(imagePath);
-    //   multipartFiles.add(fileImage);
-    // }
-
-    // request.files.addAll(multipartFiles);
-    // try {
-    //   var response = await request.send();
-    //   if (response.statusCode == 200) {
-    //     // Navigator.pushReplacementNamed(context, '/home');
-    //     print('Images uploaded successfully!');
-    //   } else {
-    //     print('Failed to upload images. Status code: ${response.statusCode}');
-    //   }
-    // } catch (e) {
-    //   // Xử lý ngoại lệ khi gặp lỗi trong quá trình gửi ảnh
-    //   print('Error uploading images: $e');
-    //   // setState(() {});
-    // }
   }
-
-  // Future<void> sendImages() async {
-  //   if (_imagePaths.isNotEmpty) {
-  //     await uploadImagesToServer();
-  //   } else {
-  //     // Xử lý khi không có ảnh được chọn
-  //   }
-  // }
 
   Future<void> selectImages() async {
     final picker = ImagePicker();
@@ -148,37 +115,6 @@ class _DangBaiWidgetState extends State<DangBai> {
   //     });
   //   }
   // }
-  Future postData() async {
-    var url = Uri.parse(apiUrl);
-    var formData = http.MultipartRequest('POST', url);
-    List<String> images = [];
-    if(_imagePaths.isNotEmpty) {
-      for(String file in _imagePaths) {
-        images.add(file);
-      }
-    }
-    formData.headers['Authorization'] = 'Bearer $authToken';
-    formData.fields.addAll({
-      'described': "described",
-      'status': "status",
-      // 'image': jsonEncode(images),
-    });
-    // if(videoFile != null) {
-      formData.files.add(
-          await http.MultipartFile.fromPath('image', images[0]));
-    // }
-    try {
-      final response = await formData.send();
-      if (response.statusCode == 200) {
-        print('Success: ${await response.stream.bytesToString()}');
-      } else {
-        throw Exception('Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString()}');
-      }
-    } catch (e) {
-      print('Error4: $e');
-      throw Exception('Failed to post data');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,9 +146,8 @@ class _DangBaiWidgetState extends State<DangBai> {
                   const Spacer(),
                   TextButton(
                     onPressed: uploadImagesToServer,
-
                     child: const Text(
-                      'Đăng',
+                      'Lưu',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -374,6 +309,7 @@ class _DangBaiWidgetState extends State<DangBai> {
                           Container(
                             padding: EdgeInsets.all(8.0),
                             child: TextField(
+                              controller: _controller,
                               focusNode: _focusNode,
                               maxLines: null,
                               expands: true,
