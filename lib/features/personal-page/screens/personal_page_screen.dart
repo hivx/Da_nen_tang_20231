@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../dangBai.dart';
 import '../../../models/user.dart';
 import '../../../utils/httpRequest.dart';
 import '../../news-feed/widgets/post_card.dart';
@@ -2085,7 +2086,13 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
             ),
             if (user.type != 'page')
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DangBai()),
+                  );
+                },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 15,

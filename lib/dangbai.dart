@@ -148,37 +148,37 @@ class _DangBaiWidgetState extends State<DangBai> {
   //     });
   //   }
   // }
-  Future postData() async {
-    var url = Uri.parse(apiUrl);
-    var formData = http.MultipartRequest('POST', url);
-    List<String> images = [];
-    if(_imagePaths.isNotEmpty) {
-      for(String file in _imagePaths) {
-        images.add(file);
-      }
-    }
-    formData.headers['Authorization'] = 'Bearer $authToken';
-    formData.fields.addAll({
-      'described': "described",
-      'status': "status",
-      // 'image': jsonEncode(images),
-    });
-    // if(videoFile != null) {
-      formData.files.add(
-          await http.MultipartFile.fromPath('image', images[0]));
-    // }
-    try {
-      final response = await formData.send();
-      if (response.statusCode == 200) {
-        print('Success: ${await response.stream.bytesToString()}');
-      } else {
-        throw Exception('Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString()}');
-      }
-    } catch (e) {
-      print('Error4: $e');
-      throw Exception('Failed to post data');
-    }
-  }
+  // Future postData() async {
+  //   var url = Uri.parse(apiUrl);
+  //   var formData = http.MultipartRequest('POST', url);
+  //   List<String> images = [];
+  //   if(_imagePaths.isNotEmpty) {
+  //     for(String file in _imagePaths) {
+  //       images.add(file);
+  //     }
+  //   }
+  //   formData.headers['Authorization'] = 'Bearer $authToken';
+  //   formData.fields.addAll({
+  //     'described': "described",
+  //     'status': "status",
+  //     // 'image': jsonEncode(images),
+  //   });
+  //   // if(videoFile != null) {
+  //     formData.files.add(
+  //         await http.MultipartFile.fromPath('image', images[0]));
+  //   // }
+  //   try {
+  //     final response = await formData.send();
+  //     if (response.statusCode == 200) {
+  //       print('Success: ${await response.stream.bytesToString()}');
+  //     } else {
+  //       throw Exception('Failed to post data. Status code: ${response.statusCode} ${response.stream.bytesToString()}');
+  //     }
+  //   } catch (e) {
+  //     print('Error4: $e');
+  //     throw Exception('Failed to post data');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
