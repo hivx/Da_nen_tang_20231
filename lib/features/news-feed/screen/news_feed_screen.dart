@@ -70,7 +70,7 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
       shareWith: 'friends',
     ),
   ];
-
+  late String lastId = "0" ;
   List<Post> posts = [
     // Post(
     //   user: User(
@@ -102,26 +102,49 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
   @override
   void initState() {
     super.initState();
-    _callAPI();
+    _callAPI("0");
   }
 
-  Future<void> _callAPI() async {
+  Future<void> _callAPI(String lastId) async {
+    print("lastid" + lastId);
     try {
       Map<String, dynamic> requestData = {
+        "last_id": lastId,
         "index": "0",
         "count": "10"
       };
 
       var result = await callAPI('/get_list_posts',
           requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
-      posts = postsFromJson(result['post']);
-      setState(() {});
+      setState(() {
+        posts.addAll(postsFromJson(result['post']));
+        this.lastId = (result['last_id']);
+      });
+      print("lastid" + lastId);
       // }
     } catch (error) {
       // setState(() {});
     }
   }
 
+  Future<void> _callNewAPI() async {
+    try {
+      Map<String, dynamic> requestData = {
+        "count": "10"
+      };
+
+      var result = await callNewAPI('/get_new_posts',
+          requestData); // Sử dụng 'await' để đợi kết thúc của hàm callAPI
+
+      setState(() {
+        posts = postsFromJson(result['post']);
+        print("post dã update");
+      });
+      // }
+    } catch (error) {
+      // setState(() {});
+    }
+  }
   @override
   void dispose() {
     scrollController.dispose();
@@ -138,6 +161,15 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
                 scrollController.offset -
                 NewsFeedScreen.offset);
         NewsFeedScreen.offset = scrollController.offset;
+      }
+      // if (scrollController.offset <= 0.0) {
+      //   // Scroll đã đến đầu
+      //   // Thực hiện hành động của bạn ở đây
+      //   print("Đã scroll lên đầu");
+      //   _callNewAPI();
+      // }
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+        _callAPI(lastId);
       }
     });
     return SingleChildScrollView(
