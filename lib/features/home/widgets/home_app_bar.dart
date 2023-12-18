@@ -1,4 +1,5 @@
 import 'package:anti_facebook_app/constants/global_variables.dart';
+import 'package:anti_facebook_app/features/search/search_bar.dart';
 import 'package:flutter/material.dart';
 
 class HomeAppBar extends StatefulWidget {
@@ -53,7 +54,13 @@ class _HomeAppBarState extends State<HomeAppBar> {
               child: IconButton(
                 splashRadius: 18,
                 padding: const EdgeInsets.all(0),
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to the SearchBarApp class
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchBarApp()),
+                  );
+                },
                 icon: const ImageIcon(
                   AssetImage('assets/images/search.png'),
                   size: 22,
