@@ -4,12 +4,13 @@ import 'package:anti_facebook_app/models/search_post.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
+import '../UserData/user_info.dart';
 import '../models/search_post.dart';
 
 class NetworkRequest {
   static const String url = 'https://it4788.catan.io.vn/search';
-  final String authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODg2LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI3NzI0OTZ9.gvFieSd-eC7-WwrY5J914QCJZWPR4vMQ-1cS87oHy8A';
-
+  // final String authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ODg2LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI3NzI0OTZ9.gvFieSd-eC7-WwrY5J914QCJZWPR4vMQ-1cS87oHy8A';
+  final String authToken = UserInfo.token;
   List<SearchPost> parsePost(String responseBody) {
     var list = json.decode(responseBody) as List<dynamic>;
     return list.map((model) => SearchPost.fromJson(model)).toList();

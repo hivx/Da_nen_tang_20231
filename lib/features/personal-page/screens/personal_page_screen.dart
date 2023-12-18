@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../UserData/user_info.dart';
 import '../../../dangBai.dart';
 import '../../../models/user.dart';
 import '../../../utils/httpRequest.dart';
@@ -34,7 +35,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   final String getListPosts = 'https://it4788.catan.io.vn/get_list_posts';
   final String getUserInfo = 'https://it4788.catan.io.vn/get_user_info';
   final String apiGetUserFriend = 'https://it4788.catan.io.vn/get_user_friends';
-  final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
 
   late User newUser = widget.user;
   late String userName = widget.user.name ?? "";
@@ -62,7 +63,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
       );
       if (response.statusCode == 201) {
         var responseData = json.decode(response.body);
-
+        print(responseData);
         String id = responseData['data']['id'];
         String username = responseData['data']['username'];
         String created = responseData['data']['created'];
@@ -382,8 +383,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   @override
   void initState() {
     super.initState();
-    getListFriend();
-    _callAPI();
+    // getListFriend();
+    // _callAPI();
     getInfo();
   }
 

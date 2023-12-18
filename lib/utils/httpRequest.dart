@@ -3,10 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../UserData/user_info.dart';
+
 Future<Map<String, dynamic>> callAPI(
     String endpoint, Map<String, dynamic> requestData) async {
-  String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
+  String token = UserInfo.token;
 
   Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ Future<Map<String, dynamic>> callAPI(
 Future<Map<String, dynamic>> callAPIcomment(
     String endpoint, Map<String, dynamic> requestData) async {
   String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
+      UserInfo.token;
 
   Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ Future<Map<String, dynamic>> addPostWithImages(
   List<File> images,
 ) async {
   String token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjA4LCJkZXZpY2VfaWQiOiJzdHJpbmciLCJpYXQiOjE3MDI4MDMwNzB9.jlr06XHIjGkzgo2ESGP0z5NO8DsquSLxEk2wue3pEIU';
+      UserInfo.token;
 
   String url = 'https://it4788.catan.io.vn$endpoint';
 

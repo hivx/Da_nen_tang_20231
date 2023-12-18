@@ -7,6 +7,7 @@ import 'package:anti_facebook_app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'Login/login.dart';
 import 'constants/global_variables.dart';
 
 void main() {
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
-      home: const HomeScreen(),
+      home: Login(),
       // home: PostListScreen(),
     );
   }

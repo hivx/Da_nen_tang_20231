@@ -5,6 +5,7 @@ import 'package:anti_facebook_app/features/friends/screens/friends_search_screen
 import 'package:anti_facebook_app/features/friends/screens/friends_suggest_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../../../UserData/user_info.dart';
 import '../../../models/user.dart';
 import 'package:http/http.dart' as http;
 
@@ -40,7 +41,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
       'https://it4788.catan.io.vn/get_requested_friends';
   final String apiSetAcceptFriend =
       'https://it4788.catan.io.vn/set_accept_friend';
-  final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
 
   int totalRequestFriend = 0;
 

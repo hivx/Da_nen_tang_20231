@@ -9,6 +9,7 @@ import 'package:anti_facebook_app/utils/httpRequest.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../UserData/user_info.dart';
 import '../../../dangbai.dart';
 
 class NewsFeedScreen extends StatefulWidget {
@@ -130,7 +131,7 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).user;
+    // final User user = Provider.of<UserProvider>(context).user;
     scrollController.addListener(() {
       if (widget.parentScrollController.hasClients) {
         widget.parentScrollController.jumpTo(
@@ -153,8 +154,12 @@ class _NewsFeedScreenState extends State<NewsFeedScreen> {
                   padding: const EdgeInsets.only(
                     right: 10,
                   ),
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage(user.avatar),
+                  child: UserInfo.avatar.startsWith('http')
+                      ? CircleAvatar(
+                    backgroundImage: NetworkImage(UserInfo.avatar),
+                    radius: 20,
+                  ) : CircleAvatar(
+                    backgroundImage: AssetImage(UserInfo.avatar),
                     radius: 20,
                   ),
                 ),

@@ -45,6 +45,8 @@ dependencies:
   http_parser: ^4.0.0
   image_field: ^0.0.5
   image_picker: ^1.0.4
+  shared_preferences: ^2.0.0
+#  webview_flutter: ^2.0.13
 
 
 dev_dependencies:
@@ -80,6 +82,11 @@ flutter:
         - assets/videos/
         - assets/images/menu/
         - assets/images/nav/
+        - assets/images/icon_facebook_login.png
+        - assets/images/default_avatar.png
+        - assets/images/icon_meta.png
+        - assets/images/icon_facebook.png
+        - assets/images/join_facebook.png
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware

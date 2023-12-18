@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:anti_facebook_app/UserData/user_info.dart';
 import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,13 +48,13 @@ class _FriendsSearchScreenState extends State<FriendsSearchScreen> {
       'https://it4788.catan.io.vn/set_request_friend';
   final String apiUnfriend =
       'https://it4788.catan.io.vn/unfriend';
-  final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
   int totalFriend = 0;
   Future getData() async {
     var data = {
       "index": "0",
       "count": "5",
-      "user_id": "375"
+      "user_id": UserInfo.userId
     };
 
     try {

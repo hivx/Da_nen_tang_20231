@@ -5,6 +5,7 @@ import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../UserData/user_info.dart';
 import '../../../models/user.dart';
 import '../../personal-page/screens/personal_page_screen.dart';
 
@@ -35,8 +36,8 @@ class _BlockScreenState extends State<BlockScreen> {
   List<FriendBlock> friendBlocks = [];
   final TextEditingController searchController = TextEditingController();
 
-  final String authToken = GlobalVariables.token;
-
+  // final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
   Future getData() async {
     var data = {
       "index": "0",

@@ -4,6 +4,7 @@ import 'package:anti_facebook_app/constants/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../UserData/user_info.dart';
 import '../../../models/user.dart';
 import '../../personal-page/screens/personal_page_screen.dart';
 
@@ -39,7 +40,7 @@ class _FriendsSuggestScreenState extends State<FriendsSuggestScreen> {
       'https://it4788.catan.io.vn/set_request_friend';
   final String apiDelRequestFriend =
       'https://it4788.catan.io.vn/del_request_friend';
-  final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
 
   Future getData() async {
     var data = {"index": "0", "count": "10"};

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../../UserData/user_info.dart';
 import '../../../models/user.dart';
 import '../../../providers/user_provider.dart';
 
@@ -111,7 +112,7 @@ class _ProfileContentState extends State<ProfileContent> {
   }
 
   final String setUserInfo = 'https://it4788.catan.io.vn/set_user_info';
-  final String authToken = GlobalVariables.token;
+  final String authToken = UserInfo.token;
 
   Future setUserData() async {
     var url = Uri.parse(setUserInfo);
