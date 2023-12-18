@@ -32,6 +32,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   int mutualFriends = 0;
   final String getListPosts = 'https://it4788.catan.io.vn/get_list_posts';
   final String getUserInfo = 'https://it4788.catan.io.vn/get_user_info';
+  final String apiGetUserFriend = 'https://it4788.catan.io.vn/get_user_friends';
   final String authToken = GlobalVariables.token;
 
   late User newUser = widget.user;
@@ -42,6 +43,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   late String address = widget.user.address ?? "";
   late String description = widget.user.bio ?? "";
   late String coins = widget.user.coins ?? "50";
+  late List<User> topFriends = [];
+
   Future getInfo() async {
     var data = {
       "user_id": widget.user.userId,
@@ -313,6 +316,49 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
       throw Exception('Failed to set request friend');
     }
   }
+  Future getListFriend() async {
+    var data = {
+      "index": "0",
+      "count": "5",
+      "user_id": widget.user.userId
+    };
+    try {
+      var response = await http.post(
+        Uri.parse(apiGetUserFriend),
+        body: json.encode(data),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        Map<String, dynamic> data = responseData['data'];
+        List<dynamic> requests = data['friends'];
+        List<User> tempFriend= [];
+        for (var request in requests) {
+          String username = request['username'];
+          String id = request['id'];
+          String avatar = request['avatar'];
+          User user = User(name: username, avatar: avatar, userId: id);
+          tempFriend.add(user);
+          print("1121" + username);
+        }
+        setState(() {
+          topFriends = tempFriend;
+        });
+
+        return responseData;
+      } else {
+        throw Exception(
+            'Failed to get friends. Status code: ${response.statusCode} ${response.body}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      throw Exception('Failed to get friends');
+    }
+
+    }
   String formatTimeDifference(Duration difference) {
     if (difference.inMinutes < 60) {
       return "${difference.inMinutes} phút";
@@ -335,7 +381,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   @override
   void initState() {
     super.initState();
-    // getPosts();
+    getListFriend();
     _callAPI();
     getInfo();
   }
@@ -1848,22 +1894,22 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                  if (user.topFriends != null)
+                  if (topFriends.isNotEmpty)
                     Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             for (int i = 0;
-                                i < min(3, user.topFriends!.length);
+                                i < min(3, topFriends!.length);
                                 i++)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.asset(
-                                      user.topFriends![i].avatar,
+                                    child: Image.network(
+                                      topFriends![i].avatar,
                                       width:
                                           (MediaQuery.of(context).size.width -
                                                   50) /
@@ -1883,7 +1929,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                             50) /
                                         3,
                                     child: Text(
-                                      user.topFriends![i].name,
+                                      topFriends![i].name,
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w500,
@@ -1893,7 +1939,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                   ),
                                 ],
                               ),
-                            for (int i = min(3, user.topFriends!.length);
+                            for (int i = min(3, topFriends!.length);
                                 i < 3;
                                 i++)
                               SizedBox(
@@ -1903,24 +1949,24 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                               ),
                           ],
                         ),
-                        if (user.topFriends!.length > 3)
+                        if (topFriends!.length > 3)
                           const SizedBox(
                             height: 10,
                           ),
-                        if (user.topFriends!.length > 3)
+                        if (topFriends!.length > 3)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               for (int i = 3;
-                                  i < min(6, user.topFriends!.length);
+                                  i < min(6, topFriends!.length);
                                   i++)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                        user.topFriends![i].avatar,
+                                      child: Image.network(
+                                        topFriends![i].avatar,
                                         width:
                                             (MediaQuery.of(context).size.width -
                                                     50) /
@@ -1941,7 +1987,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                                   50) /
                                               3,
                                       child: Text(
-                                        user.topFriends![i].name,
+                                        topFriends![i].name,
                                         style: const TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
@@ -1951,7 +1997,7 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
                                     ),
                                   ],
                                 ),
-                              for (int i = min(6, user.topFriends!.length);
+                              for (int i = min(6, topFriends!.length);
                                   i < 6;
                                   i++)
                                 SizedBox(
