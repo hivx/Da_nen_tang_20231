@@ -1,19 +1,21 @@
 class Noti {
+  final String? id;
   final String content;
   final List<String>? bold;
   final String image;
   final String time;
   final String type;
   final bool? seen;
-  Noti(
-      {required this.content,
-      this.bold,
-      required this.image,
-      required this.time,
-      required this.type,
-      this.seen});
-}
 
+  Noti(
+      {this.id,
+        required this.content,
+        this.bold,
+        required this.image,
+        required this.time,
+        required this.type,
+        this.seen});
+}
 
 /* NOTIFICATIONS TYPES:
 

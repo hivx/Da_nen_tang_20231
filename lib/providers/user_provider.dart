@@ -1,14 +1,15 @@
 import 'package:anti_facebook_app/models/user.dart';
 import 'package:flutter/material.dart';
 
+import '../UserData/user_info.dart';
 import '../models/post.dart';
 import '../models/story.dart';
 
 class UserProvider extends ChangeNotifier {
   late User _user = User(
-    name: 'Lê Công ',
+    name: UserInfo.userName,
 
-    avatar: 'assets/images/user/lcd.jpg',
+    avatar: UserInfo.avatar,
     educations: [
       Education(
         majors: 'Software Engineering',
@@ -125,7 +126,7 @@ class UserProvider extends ChangeNotifier {
     city: "hn",
     country: "hn",
     link: "",
-    userId: "375",
+    userId: UserInfo.userId,
     coins: "50",
   );
   User get user => _user;

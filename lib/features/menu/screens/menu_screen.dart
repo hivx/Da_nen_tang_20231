@@ -306,8 +306,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // User user = Provider.of<UserProvider>(context).user;
-    User user = User(id: int.parse(UserInfo.userId), name: UserInfo.userName, avatar: UserInfo.avatar);
+    User user = Provider.of<UserProvider>(context).user;
+    // User user = User(userId: UserInfo.userId, name: UserInfo.userName, avatar: UserInfo.avatar);
     scrollController.addListener(() {
       headerScrollController.jumpTo(headerScrollController.offset +
           scrollController.offset -

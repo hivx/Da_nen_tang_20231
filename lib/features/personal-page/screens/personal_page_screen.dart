@@ -383,8 +383,8 @@ class _PersonalPageScreenState extends State<PersonalPageScreen> {
   @override
   void initState() {
     super.initState();
-    // getListFriend();
-    // _callAPI();
+    getListFriend();
+    _callAPI();
     getInfo();
   }
 

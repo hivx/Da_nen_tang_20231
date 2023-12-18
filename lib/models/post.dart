@@ -128,7 +128,7 @@ class Post {
     user = User.fromJson(json['author']);
     like = 1000;
     love = 7300;
-    comment = 258;
+    comment = int.parse(json['comment_mark'].toString());
     haha = 235;
     share = 825;
     lovelove = 212;
